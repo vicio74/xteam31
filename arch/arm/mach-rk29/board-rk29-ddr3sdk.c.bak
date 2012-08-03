@@ -67,10 +67,9 @@
 #ifdef CONFIG_BU92747GUW_CIR
 #include "../../../drivers/cir/bu92747guw_cir.h"
 #endif
+
 #ifdef CONFIG_VIDEO_RK29
-/*---------------- Camera Sensor Macro Define Begin  ------------------------*/
-/*---------------- Camera Sensor Configuration Macro Begin ------------------------*/
-#define CONFIG_SENSOR_0 RK29_CAM_SENSOR_OV5642                      /* back camera sensor */
+#define CONFIG_SENSOR_0 RK29_CAM_SENSOR_OV5642  /* back camera sensor */
 #define CONFIG_SENSOR_IIC_ADDR_0 	    0x78
 #define CONFIG_SENSOR_IIC_ADAPTER_ID_0    1
 #define CONFIG_SENSOR_ORIENTATION_0       90
@@ -82,7 +81,6 @@
 #define CONFIG_SENSOR_RESETACTIVE_LEVEL_0 RK29_CAM_RESETACTIVE_L
 #define CONFIG_SENSOR_POWERDNACTIVE_LEVEL_0 RK29_CAM_POWERDNACTIVE_H
 #define CONFIG_SENSOR_FLASHACTIVE_LEVEL_0 RK29_CAM_FLASHACTIVE_L
-
 #define CONFIG_SENSOR_QCIF_FPS_FIXED_0      15000
 #define CONFIG_SENSOR_QVGA_FPS_FIXED_0      15000
 #define CONFIG_SENSOR_CIF_FPS_FIXED_0       15000
@@ -92,8 +90,9 @@
 #define CONFIG_SENSOR_720P_FPS_FIXED_0      30000
 
 
-#define CONFIG_SENSOR_1 RK29_CAM_SENSOR_OV2659                      /* front camera sensor */
-#define CONFIG_SENSOR_IIC_ADDR_1 	    0x60
+
+#define CONFIG_SENSOR_1 RK29_CAM_SENSOR_NT99250	/* front camera sensor */
+#define CONFIG_SENSOR_IIC_ADDR_1 	    0x6C
 #define CONFIG_SENSOR_IIC_ADAPTER_ID_1    1
 #define CONFIG_SENSOR_ORIENTATION_1       270
 #define CONFIG_SENSOR_POWER_PIN_1         INVALID_GPIO
@@ -104,7 +103,7 @@
 #define CONFIG_SENSOR_RESETACTIVE_LEVEL_1 RK29_CAM_RESETACTIVE_L
 #define CONFIG_SENSOR_POWERDNACTIVE_LEVEL_1 RK29_CAM_POWERDNACTIVE_H
 #define CONFIG_SENSOR_FLASHACTIVE_LEVEL_1 RK29_CAM_FLASHACTIVE_L
-
+#define NT99250_X_OFFSET	2
 #define CONFIG_SENSOR_QCIF_FPS_FIXED_1      15000
 #define CONFIG_SENSOR_QVGA_FPS_FIXED_1      15000
 #define CONFIG_SENSOR_CIF_FPS_FIXED_1       15000
@@ -113,47 +112,11 @@
 #define CONFIG_SENSOR_SVGA_FPS_FIXED_1      15000
 #define CONFIG_SENSOR_720P_FPS_FIXED_1      30000
 
-#define CONFIG_SENSOR_1 	 RK29_CAM_SENSOR_GT2005		
-#define CONFIG_SENSOR_IIC_ADDR_1 	   0x78
-#define CONFIG_SENSOR_ORIENTATION_1 	  270
-#define CONFIG_SENSOR_IIC_ADAPTER_ID_1    1
-#define CONFIG_SENSOR_POWER_PIN_1         INVALID_GPIO
-#define CONFIG_SENSOR_RESET_PIN_1         INVALID_GPIO
-#define CONFIG_SENSOR_POWERDN_PIN_1      RK29_PIN5_PD7// RK29_PIN5_PD7
-#define CONFIG_SENSOR_FALSH_PIN_1        INVALID_GPIO
-#define CONFIG_SENSOR_POWERACTIVE_LEVEL_1 RK29_CAM_POWERACTIVE_L
-#define CONFIG_SENSOR_RESETACTIVE_LEVEL_1 RK29_CAM_RESETACTIVE_L
-#define CONFIG_SENSOR_POWERDNACTIVE_LEVEL_1 RK29_CAM_POWERDNACTIVE_L
-#define CONFIG_SENSOR_FLASHACTIVE_LEVEL_1 RK29_CAM_FLASHACTIVE_L
-#define CONFIG_SENSOR_QCIF_FPS_FIXED_1      0
-#define CONFIG_SENSOR_QVGA_FPS_FIXED_1      0
-#define CONFIG_SENSOR_480P_FPS_FIXED_1      0
-#define CONFIG_SENSOR_CIF_FPS_FIXED_1       0
-#define CONFIG_SENSOR_VGA_FPS_FIXED_1       30000
-#define CONFIG_SENSOR_SVGA_FPS_FIXED_1     0
-#define CONFIG_SENSOR_720P_FPS_FIXED_1      0
-
-#ifdef CONFIG_SOC_CAMERA_GT2005
-#define CONFIG_SENSOR_0   RK29_CAM_SENSOR_GT2005			/* front camera sensor */
-#define CONFIG_SENSOR_IIC_ADDR_0 	    0x78
-#define CONFIG_SENSOR_ORIENTATION_0 	  90
-#define CONFIG_SENSOR_IIC_ADAPTER_ID_0    1
-#define CONFIG_SENSOR_POWER_PIN_0         INVALID_GPIO
-#define CONFIG_SENSOR_RESET_PIN_0         INVALID_GPIO
-#define CONFIG_SENSOR_POWERDN_PIN_0      RK29_PIN6_PB7 //RK29_PIN6_PB7
-#define CONFIG_SENSOR_FALSH_PIN_0         INVALID_GPIO
-#define CONFIG_SENSOR_POWERACTIVE_LEVEL_0 RK29_CAM_POWERACTIVE_L
-#define CONFIG_SENSOR_RESETACTIVE_LEVEL_0 RK29_CAM_RESETACTIVE_L
-#define CONFIG_SENSOR_POWERDNACTIVE_LEVEL_0 RK29_CAM_POWERDNACTIVE_L
-#define CONFIG_SENSOR_FLASHACTIVE_LEVEL_0 RK29_CAM_FLASHACTIVE_L
-#define CONFIG_SENSOR_QCIF_FPS_FIXED_0      0
-#define CONFIG_SENSOR_QVGA_FPS_FIXED_0      0
-#define CONFIG_SENSOR_480P_FPS_FIXED_0      0
-#define CONFIG_SENSOR_CIF_FPS_FIXED_0       0
-#define CONFIG_SENSOR_VGA_FPS_FIXED_0       30000
-#define CONFIG_SENSOR_SVGA_FPS_FIXED_0      0
-#define CONFIG_SENSOR_720P_FPS_FIXED_0      0
-
+/***************************************************
+ *
+ *                  CAMERA SENSOR
+ *
+ **************************************************/
 
 #endif  //#ifdef CONFIG_VIDEO_RK29
 /*---------------- Camera Sensor Configuration Macro End------------------------*/
@@ -167,22 +130,22 @@
 #else
 #define SDRAM_SIZE          SZ_512M
 #endif
-#define PMEM_GPU_SIZE       (128*SZ_1M)
-#define PMEM_UI_SIZE        (74 * SZ_1M) /* 1280x800: 64M 1024x768: 48M ... */
+#define PMEM_GPU_SIZE       SZ_64M /* (128*SZ_1M)*/
+#define PMEM_UI_SIZE        SZ_32M /* (74 * SZ_1M)  1280x800: 64M 1024x768: 48M ... */
 #define PMEM_VPU_SIZE       SZ_64M
-#define PMEM_SKYPE_SIZE     0
-#define PMEM_CAM_SIZE       PMEM_CAM_NECESSARY
+#define PMEM_SKYPE_SIZE     0 //SZ_8M /* 0*/
+#define PMEM_CAM_SIZE       0x01300000 /* PMEM_CAM_NECESSARY */
 #ifdef CONFIG_VIDEO_RK29_WORK_IPP
-#define MEM_CAMIPP_SIZE     PMEM_CAMIPP_NECESSARY
+#define MEM_CAMIPP_SIZE     SZ_4M //SZ_8M /* PMEM_CAMIPP_NECESSARY */
 #else
 #define MEM_CAMIPP_SIZE     0
 #endif
-#define MEM_FB_SIZE         (9*SZ_1M)
+#define MEM_FB_SIZE         (3*SZ_2M) /* (9*SZ_1M) */
 #ifdef CONFIG_FB_WORK_IPP
 #ifdef CONFIG_FB_SCALING_OSD_1080P
-#define MEM_FBIPP_SIZE      SZ_16M   //1920 x 1080 x 2 x 2  //RGB565 = x2;RGB888 = x4
+#define MEM_FBIPP_SIZE      SZ_16M   /* 1920 x 1080 x 2 x 2  //RGB565 = x2;RGB888 = x4 */
 #else
-#define MEM_FBIPP_SIZE      SZ_8M   //1920 x 1080 x 2 x 2  //RGB565 = x2;RGB888 = x4
+#define MEM_FBIPP_SIZE      SZ_8M   /* 1920 x 1080 x 2 x 2  //RGB565 = x2;RGB888 = x4 */
 #endif
 #else
 #define MEM_FBIPP_SIZE      0
@@ -233,7 +196,8 @@ struct rk29_nand_platform_data rk29_nand_data = {
     .io_init   = rk29_nand_io_init,
 };
 
-#define TOUCH_SCREEN_STANDBY_PIN          INVALID_GPIO
+
+#define TOUCH_SCREEN_STANDBY_PIN          RK29_PIN6_PD1
 #define TOUCH_SCREEN_STANDBY_VALUE        GPIO_HIGH
 #define TOUCH_SCREEN_DISPLAY_PIN          INVALID_GPIO
 #define TOUCH_SCREEN_DISPLAY_VALUE        GPIO_HIGH
@@ -252,12 +216,12 @@ struct rk29_nand_platform_data rk29_nand_data = {
 * author: zyw@rock-chips.com
 *****************************************************************************************/
 #define FB_ID                       0
-#define FB_DISPLAY_ON_PIN           	RK29_PIN6_PD1 
-#define FB_LCD_STANDBY_PIN          INVALID_GPIO
-#define FB_LCD_CABC_EN_PIN          RK29_PIN6_PD2
+#define FB_DISPLAY_ON_PIN           RK29_PIN6_PD1 //INVALID_GPIO // RK29_PIN6_PD0
+#define FB_LCD_STANDBY_PIN          RK29_PIN6_PD0 // RK29_PIN6_PD1
+#define FB_LCD_CABC_EN_PIN          INVALID_GPIO // RK29_PIN6_PD2
 #define FB_MCU_FMK_PIN              INVALID_GPIO
 
-#define FB_DISPLAY_ON_VALUE         GPIO_LOW//GPIO_HIGH
+#define FB_DISPLAY_ON_VALUE         GPIO_HIGH
 #define FB_LCD_STANDBY_VALUE        GPIO_HIGH
 
 static int rk29_lcd_io_init(void)
@@ -649,6 +613,14 @@ struct platform_device rk29_device_newton = {
 		}    	    
 	};
 #endif
+#if defined (CONFIG_TOUCHSCREEN_FT5301)
+static struct ts_hw_data ts_hw_info = {
+	.reset_gpio = RK29_PIN6_PC3,
+//#if defined (GPIO_TOUCH_EN)
+	.touch_en_gpio = RK29_PIN6_PB0,
+//#endif
+};
+#endif
 #if defined (CONFIG_TOUCHSCREEN_FT5406)
 #define TOUCH_RESET_PIN RK29_PIN6_PC3
 #define TOUCH_INT_PIN   RK29_PIN0_PA2
@@ -698,6 +670,7 @@ int ft5406_platform_wakeup(void)
 	msleep(300);
 	return 0;
 }
+
 
 struct ft5406_platform_data ft5406_info = {
 
@@ -860,7 +833,7 @@ static struct android_pmem_platform_data android_pmem_pdata = {
 	.name		= "pmem",
 	.start		= PMEM_UI_BASE,
 	.size		= PMEM_UI_SIZE,
-	.no_allocator	= 1,
+	.no_allocator	= 0,
 	.cached		= 1,
 };
 
@@ -1104,6 +1077,7 @@ struct bq27510_platform_data bq27510_info = {
 #endif
 
 #ifdef CONFIG_BATTERY_RK29_ADC
+/* commented by Yatto
 struct rk29_adc_battery_platform_data rk29_adc_battery_platdata = {
 	.dc_det_pin      = RK29_PIN4_PA1,
 	.batt_low_pin    = RK29_PIN4_PA2,
@@ -1112,8 +1086,55 @@ struct rk29_adc_battery_platform_data rk29_adc_battery_platdata = {
 	
 	.dc_det_level    = GPIO_LOW,
 	.charge_ok_level = GPIO_HIGH,
+};*/
+static struct adc_battery_platform_data rk29_battery_data = {
+	.adc_chn = 0,
+	.dc_det_gpio = GPIO_DC_DET,
+	.chg_ok_gpio = GPIO_CHG_OK,
+
+	.batt_low_gpio    = INVALID_GPIO,
+	.charge_set_gpio  = INVALID_GPIO,
+	
+	.dc_det_level    = DC_DET_EFFECTIVE,
+#ifdef CHG_OK_EFFECTIVE
+	.chg_ok_level = CHG_OK_EFFECTIVE,
+#endif
+};
+
+struct platform_device rk29_device_battery = {
+		.name	= "rk29_battery",
+		.id 	= -1,
+		.dev = {
+			.platform_data = &rk29_battery_data,
+		}
 };
 #endif
+
+#ifdef CONFIG_BATTERY_RK2918
+static struct rk2918_battery_platform_data rk2918_battery_data = {
+		.dc_det_pin = GPIO_DC_DET,
+		.charge_ok_pin = GPIO_CHG_OK,
+		.dc_det_level	= DC_DET_EFFECTIVE,
+		.charge_ok_level= CHG_OK_EFFECTIVE,
+		.charge_set_pin	= INVALID_GPIO,
+#ifdef DC_CURRENT_IN_TWO_MODE          
+		.charge_cur_ctl = GPIO_CURRENT_CONTROL,
+		.charge_cur_ctl_level = GPIO_CURRENT_CONTROL_LEVEL,
+#else
+		.charge_cur_ctl = INVALID_GPIO,
+		.charge_cur_ctl_level = GPIO_LOW,
+#endif
+};
+
+struct platform_device rk2918_device_battery = {
+		.name   = "rk2918-battery",
+		.id     = -1,
+		.dev = {
+				.platform_data = &rk2918_battery_data,
+		}
+};
+#endif
+
 /*************************************PMU ACT8891****************************************/
 
 #if defined (CONFIG_REGULATOR_ACT8891) 
@@ -1720,15 +1741,6 @@ static struct i2c_board_info __initdata board_i2c2_devices[] = {
       //.udelay		  = 100
     },
 #endif
-#if defined (CONFIG_ZINITIX_TOUCH)
-    {
-      .type           = "p1003_touch",
-      .addr           = 0x20,//0x04,
-      .flags          = 0, //I2C_M_NEED_DELAY
-      .irq            = RK29_PIN0_PA2,
-      
-    },
-#endif
 #if defined (CONFIG_EETI_EGALAX)
     {
       .type           = "egalax_i2c",
@@ -1747,12 +1759,21 @@ static struct i2c_board_info __initdata board_i2c2_devices[] = {
 		.platform_data = &goodix_info,
     },
 #endif
+#if defined (CONFIG_TOUCHSCREEN_FT5301) 
+    {
+      .type           = "ft5x0x",
+      .addr           = 0x38,
+      .flags          = 0,
+      .irq            = RK29_PIN0_PA2,
+      .platform_data  = &ts_hw_info,
+    },
+#endif
 #if defined (CONFIG_TOUCHSCREEN_FT5406)
     {
 		.type	="ft5x0x_ts",
 		.addr 	= 0x38,    //0x70,
 		.flags      =0,
-		.irq		=RK29_PIN0_PA2, // support goodix tp detect, 20110706
+		.irq	=RK29_PIN0_PA2, // support goodix tp detect, 20110706
 		.platform_data = &ft5406_info,
     },
 #endif
@@ -1857,7 +1878,7 @@ static struct rk29camera_platform_ioctl_cb  sensor_ioctl_cb = {
  GPIO2A3_SDMMC0WRITEPRT_PWM2_NAME,   GPIO2L_PWM2
  GPIO1A5_EMMCPWREN_PWM3_NAME,     GPIO1L_PWM3
  */
-
+/*
 #define PWM_ID            0
 #define PWM_MUX_NAME      GPIO1B5_PWM0_NAME
 #define PWM_MUX_MODE      GPIO1L_PWM0
@@ -1873,14 +1894,16 @@ static struct rk29camera_platform_ioctl_cb  sensor_ioctl_cb = {
 
 #define BL_EN_PIN         RK29_PIN6_PD0
 #define BL_EN_VALUE       GPIO_HIGH
-#endif
+#endif*/
 static int rk29_backlight_io_init(void)
 {
     int ret = 0;
 
     rk29_mux_api_set(PWM_MUX_NAME, PWM_MUX_MODE);
-	#ifdef  LCD_DISP_ON_PIN
-   // rk29_mux_api_set(BL_EN_MUX_NAME, BL_EN_MUX_MODE);
+#ifdef BL_EN_PIN 
+#ifdef BLEN_MUX_NAME
+    rk29_mux_api_set(BL_EN_MUX_NAME, BL_EN_MUX_MODE);
+#endif
 
     ret = gpio_request(BL_EN_PIN, NULL);
     if(ret != 0)
@@ -1890,36 +1913,18 @@ static int rk29_backlight_io_init(void)
 
     gpio_direction_output(BL_EN_PIN, 0);
     gpio_set_value(BL_EN_PIN, BL_EN_VALUE);
-	#endif
+#endif
     return ret;
 }
 
 static int rk29_backlight_io_deinit(void)
 {
-    /*int ret = 0;
+    int ret = 0;
     #ifdef  LCD_DISP_ON_PIN
     gpio_free(BL_EN_PIN);
     #endif
     rk29_mux_api_set(PWM_MUX_NAME, PWM_MUX_MODE_GPIO);
     
-    return ret;*/
-
-    int ret = 0;
-    #ifdef  LCD_DISP_ON_PIN
-    //gpio_free(BL_EN_PIN);
-    gpio_set_value(BL_EN_PIN, /*BL_EN_VALUE*/GPIO_LOW);
-    #endif
-    rk29_mux_api_set(PWM_MUX_NAME, PWM_MUX_MODE_GPIO);
-	if (gpio_request(PWM_GPIO, NULL)) {
-		printk("func %s, line %d: request gpio fail\n", __FUNCTION__, __LINE__);
-		return -1;
-	}
-	
-    gpio_direction_output(PWM_GPIO, GPIO_HIGH);
-#ifdef  LCD_DISP_ON_PIN
-    gpio_free(BL_EN_PIN);
- #endif
- gpio_free(PWM_GPIO);
     return ret;
 }
 
@@ -1931,7 +1936,7 @@ static int rk29_backlight_pwm_suspend(void)
 		printk("func %s, line %d: request gpio fail\n", __FUNCTION__, __LINE__);
 		return -1;
 	}
-	gpio_direction_output(PWM_GPIO, GPIO_LOW);
+	gpio_direction_output(PWM_GPIO, GPIO_HIGH);
    #ifdef  LCD_DISP_ON_PIN
     gpio_direction_output(BL_EN_PIN, 0);
     gpio_set_value(BL_EN_PIN, !BL_EN_VALUE);
@@ -1941,6 +1946,8 @@ static int rk29_backlight_pwm_suspend(void)
 
 static int rk29_backlight_pwm_resume(void)
 {
+	msleep(200);
+
 	gpio_free(PWM_GPIO);
 	rk29_mux_api_set(PWM_MUX_NAME, PWM_MUX_MODE);
 
@@ -1959,7 +1966,6 @@ struct rk29_bl_info rk29_bl_info = {
     .io_deinit = rk29_backlight_io_deinit,
     .pwm_suspend = rk29_backlight_pwm_suspend,
     .pwm_resume = rk29_backlight_pwm_resume,
-    .min_brightness = 70,
 };
 #endif
 /*****************************************************************************************
@@ -2770,7 +2776,11 @@ static struct platform_device *devices[] __initdata = {
 	&rk29_device_adc,
 #endif
 #ifdef CONFIG_BATTERY_RK29_ADC
-    &rk29_adc_device_battery,
+    /*&rk29_adc_device_battery,  commented by Yatto */
+    &rk29_device_battery,
+#endif
+#ifdef CONFIG_BATTERY_RK2918
+	&rk2918_device_battery,
 #endif
 #ifdef CONFIG_I2C0_RK29
 	&rk29_device_i2c0,
@@ -3146,9 +3156,16 @@ static void __init machine_rk29_init_irq(void)
 }
 
 static struct cpufreq_frequency_table freq_table[] = {
-	{ .index = 1200000, .frequency =  408000 },
+        { .index =  950000, .frequency =  204000 },
+	{ .index = 1050000, .frequency =  300000 },
+	{ .index = 1100000, .frequency =  408000 },
+	//{ .index = 1200000, .frequency =  408000 },
+	{ .index = 1125000, .frequency =  600000 },
 	{ .index = 1200000, .frequency =  816000 },
-	{ .index = 1300000, .frequency = 1008000 },
+	{ .index = 1250000, .frequency = 1008000 },
+	{ .index = 1300000, .frequency = 1104000 },
+        { .index = 1350000, .frequency = 1176000 },
+        { .index = 1400000, .frequency = 1200000 },
 	{ .frequency = CPUFREQ_TABLE_END },
 };
 

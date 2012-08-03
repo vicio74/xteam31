@@ -53,6 +53,9 @@
 #include <mach/rk29_smc.h>
 
 #include <linux/regulator/rk29-pwm-regulator.h>
+#ifdef CONFIG_TPS65910_CORE
+#include <linux/i2c/tps65910.h>
+#endif
 #include <linux/regulator/machine.h>
 
 #include <linux/regulator/act8891.h>
@@ -69,7 +72,7 @@
 #endif
 
 #ifdef CONFIG_VIDEO_RK29
-#define CONFIG_SENSOR_0 RK29_CAM_SENSOR_OV5642  /* back camera sensor */
+#define CONFIG_SENSOR_0 RK29_CAM_SENSOR_GT2005_BACK  /* back camera sensor */
 #define CONFIG_SENSOR_IIC_ADDR_0 	    0x78
 #define CONFIG_SENSOR_IIC_ADAPTER_ID_0    1
 #define CONFIG_SENSOR_ORIENTATION_0       90
@@ -91,7 +94,7 @@
 
 
 
-#define CONFIG_SENSOR_1 RK29_CAM_SENSOR_NT99250	/* front camera sensor */
+#define CONFIG_SENSOR_1 RK29_CAM_SENSOR_GC0308	/* front camera sensor */
 #define CONFIG_SENSOR_IIC_ADDR_1 	    0x6C
 #define CONFIG_SENSOR_IIC_ADAPTER_ID_1    1
 #define CONFIG_SENSOR_ORIENTATION_1       270
@@ -131,7 +134,7 @@
 #define SDRAM_SIZE          SZ_512M
 #endif
 #define PMEM_GPU_SIZE       SZ_64M /* (128*SZ_1M)*/
-#define PMEM_UI_SIZE        SZ_32M /* (74 * SZ_1M)  1280x800: 64M 1024x768: 48M ... */
+#define PMEM_UI_SIZE        SZ_48M /* (74 * SZ_1M)  1280x800: 64M 1024x768: 48M ... */
 #define PMEM_VPU_SIZE       SZ_64M
 #define PMEM_SKYPE_SIZE     0 //SZ_8M /* 0*/
 #define PMEM_CAM_SIZE       0x01300000 /* PMEM_CAM_NECESSARY */
@@ -196,33 +199,7 @@ struct rk29_nand_platform_data rk29_nand_data = {
     .io_init   = rk29_nand_io_init,
 };
 
-
-#define TOUCH_SCREEN_STANDBY_PIN          RK29_PIN6_PD1
-#define TOUCH_SCREEN_STANDBY_VALUE        GPIO_HIGH
-#define TOUCH_SCREEN_DISPLAY_PIN          INVALID_GPIO
-#define TOUCH_SCREEN_DISPLAY_VALUE        GPIO_HIGH
-
 #ifdef CONFIG_FB_RK29
-/*****************************************************************************************
- * lcd  devices
- * author: zyw@rock-chips.com
- *****************************************************************************************/
-//#ifdef  CONFIG_LCD_TD043MGEA1
-#define LCD_TXD_PIN          INVALID_GPIO
-#define LCD_CLK_PIN          INVALID_GPIO
-#define LCD_CS_PIN           INVALID_GPIO
-/*****************************************************************************************
-* frame buffe  devices
-* author: zyw@rock-chips.com
-*****************************************************************************************/
-#define FB_ID                       0
-#define FB_DISPLAY_ON_PIN           RK29_PIN6_PD1 //INVALID_GPIO // RK29_PIN6_PD0
-#define FB_LCD_STANDBY_PIN          RK29_PIN6_PD0 // RK29_PIN6_PD1
-#define FB_LCD_CABC_EN_PIN          INVALID_GPIO // RK29_PIN6_PD2
-#define FB_MCU_FMK_PIN              INVALID_GPIO
-
-#define FB_DISPLAY_ON_VALUE         GPIO_HIGH
-#define FB_LCD_STANDBY_VALUE        GPIO_HIGH
 
 static int rk29_lcd_io_init(void)
 {
@@ -446,13 +423,6 @@ void rk29_setgpio_resume_board(void)
 #endif
 
 #if defined(CONFIG_RK_IRDA) || defined(CONFIG_BU92747GUW_CIR)
-#define BU92747GUW_RESET_PIN         RK29_PIN3_PD4// INVALID_GPIO //
-#define BU92747GUW_RESET_MUX_NAME    GPIO3D4_HOSTWRN_NAME//NULL //
-#define BU92747GUW_RESET_MUX_MODE    GPIO3H_GPIO3D4//NULL //
-
-#define BU92747GUW_PWDN_PIN          RK29_PIN3_PD3//RK29_PIN5_PA7 //
-#define BU92747GUW_PWDN_MUX_NAME     GPIO3D3_HOSTRDN_NAME//GPIO5A7_HSADCDATA2_NAME //
-#define BU92747GUW_PWDN_MUX_MODE     GPIO3H_GPIO3D3//GPIO5L_GPIO5A7  //
 
 static int bu92747guw_io_init(void)
 {
@@ -1006,7 +976,6 @@ struct kxtf9_platform_data kxtf9_pdata = {
 
 /*MMA8452 gsensor*/
 #if defined (CONFIG_GS_MMA8452)
-#define MMA8452_INT_PIN   RK29_PIN0_PA3
 
 static int mma8452_init_platform_hw(void)
 {
@@ -1411,6 +1380,411 @@ struct act8891_platform_data act8891_data={
 };
 #endif
 
+#if defined (CONFIG_TPS65910_CORE)
+/* VDD1 */
+static struct regulator_consumer_supply rk29_vdd1_supplies[] = {
+	{
+		.supply = "vcore",	//	set name vcore for all platform 
+	},
+};
+
+/* VDD1 DCDC */
+static struct regulator_init_data rk29_regulator_vdd1 = {
+	.constraints = {
+		.min_uV = 950000,
+		.max_uV = 1400000,
+		.valid_modes_mask = REGULATOR_MODE_NORMAL,
+		.valid_ops_mask = REGULATOR_CHANGE_VOLTAGE,
+		.always_on = true,
+		.apply_uV = true,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(rk29_vdd1_supplies),
+	.consumer_supplies = rk29_vdd1_supplies,
+};
+
+/* VDD2 */
+static struct regulator_consumer_supply rk29_vdd2_supplies[] = {
+	{
+		.supply = "vdd2",
+	},
+};
+
+/* VDD2 DCDC */
+static struct regulator_init_data rk29_regulator_vdd2 = {
+	.constraints = {
+		.min_uV = 1500000,
+		.max_uV = 1500000,
+		.valid_modes_mask = REGULATOR_MODE_NORMAL,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		.always_on = true,
+		.apply_uV = true,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(rk29_vdd2_supplies),
+	.consumer_supplies = rk29_vdd2_supplies,
+};
+
+/* VIO */
+static struct regulator_consumer_supply rk29_vio_supplies[] = {
+	{
+		.supply = "vio",
+	},
+};
+
+/* VIO  LDO */
+static struct regulator_init_data rk29_regulator_vio = {
+	.constraints = {
+		.min_uV = 3300000,
+		.max_uV = 3300000,
+		.valid_modes_mask = REGULATOR_MODE_NORMAL,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		.always_on = true,
+		.apply_uV = true,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(rk29_vio_supplies),
+	.consumer_supplies = rk29_vio_supplies,
+};
+
+/* VAUX1 */
+static struct regulator_consumer_supply rk29_vaux1_supplies[] = {
+	{
+		.supply = "vaux1",
+	},
+};
+
+/* VAUX1  LDO */
+static struct regulator_init_data rk29_regulator_vaux1 = {
+	.constraints = {
+		.min_uV = 2800000,
+		.max_uV = 2800000,
+		.valid_modes_mask = REGULATOR_MODE_NORMAL,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		.apply_uV = true,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(rk29_vaux1_supplies),
+	.consumer_supplies = rk29_vaux1_supplies,
+};
+
+/* VAUX2 */
+static struct regulator_consumer_supply rk29_vaux2_supplies[] = {
+	{
+		.supply = "vaux2",
+	},
+};
+
+/* VAUX2  LDO */
+static struct regulator_init_data rk29_regulator_vaux2 = {
+	.constraints = {
+		.min_uV = 2900000,
+		.max_uV = 2900000,
+		.valid_modes_mask = REGULATOR_MODE_NORMAL,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		.apply_uV = true,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(rk29_vaux2_supplies),
+	.consumer_supplies = rk29_vaux2_supplies,
+};
+
+/* VDAC */
+static struct regulator_consumer_supply rk29_vdac_supplies[] = {
+	{
+		.supply = "vdac",
+	},
+};
+
+/* VDAC  LDO */
+static struct regulator_init_data rk29_regulator_vdac = {
+	.constraints = {
+		.min_uV = 1800000,
+		.max_uV = 1800000,
+		.valid_modes_mask = REGULATOR_MODE_NORMAL,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		.apply_uV = true,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(rk29_vdac_supplies),
+	.consumer_supplies = rk29_vdac_supplies,
+};
+
+/* VAUX33 */
+static struct regulator_consumer_supply rk29_vaux33_supplies[] = {
+	{
+		.supply = "vaux33",
+	},
+};
+
+/* VAUX33  LDO */
+static struct regulator_init_data rk29_regulator_vaux33 = {
+	.constraints = {
+		.min_uV = 3300000,
+		.max_uV = 3300000,
+		.valid_modes_mask = REGULATOR_MODE_NORMAL,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		.apply_uV = true,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(rk29_vaux33_supplies),
+	.consumer_supplies = rk29_vaux33_supplies,
+};
+
+/* VMMC */
+static struct regulator_consumer_supply rk29_vmmc_supplies[] = {
+	{
+		.supply = "vmmc",
+	},
+};
+
+/* VMMC  LDO */
+static struct regulator_init_data rk29_regulator_vmmc = {
+	.constraints = {
+		.min_uV = 3000000,
+		.max_uV = 3000000,
+		.valid_modes_mask = REGULATOR_MODE_NORMAL,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		.apply_uV = true,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(rk29_vmmc_supplies),
+	.consumer_supplies = rk29_vmmc_supplies,
+};
+
+/* VPLL */
+static struct regulator_consumer_supply rk29_vpll_supplies[] = {
+	{
+		.supply = "vpll",
+	},
+};
+
+/* VPLL  LDO */
+static struct regulator_init_data rk29_regulator_vpll = {
+	.constraints = {
+		.min_uV = 2500000,
+		.max_uV = 2500000,
+		.valid_modes_mask = REGULATOR_MODE_NORMAL,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		.always_on = true,
+		.apply_uV = true,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(rk29_vpll_supplies),
+	.consumer_supplies = rk29_vpll_supplies,
+};
+
+/* VDIG1 */
+static struct regulator_consumer_supply rk29_vdig1_supplies[] = {
+	{
+		.supply = "vdig1",
+	},
+};
+
+/* VDIG1  LDO */
+static struct regulator_init_data rk29_regulator_vdig1 = {
+	.constraints = {
+		.min_uV = 2700000,
+		.max_uV = 2700000,
+		.valid_modes_mask = REGULATOR_MODE_NORMAL,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		.apply_uV = true,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(rk29_vdig1_supplies),
+	.consumer_supplies = rk29_vdig1_supplies,
+};
+
+/* VDIG2 */
+static struct regulator_consumer_supply rk29_vdig2_supplies[] = {
+	{
+		.supply = "vdig2",
+	},
+};
+
+/* VDIG2  LDO */
+static struct regulator_init_data rk29_regulator_vdig2 = {
+	.constraints = {
+		.min_uV = 1200000,
+		.max_uV = 1200000,
+		.valid_modes_mask = REGULATOR_MODE_NORMAL,
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		.always_on = true,
+		.apply_uV = true,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(rk29_vdig2_supplies),
+	.consumer_supplies = rk29_vdig2_supplies,
+};
+
+static int rk29_tps65910_config(struct tps65910_platform_data *pdata)
+{
+	u8 val 	= 0;
+	int i 	= 0;
+	int err = -1;
+
+
+	/* Configure TPS65910 for rk29 board needs */
+	printk("rk29_tps65910_config: tps65910 init config.\n");
+	
+	err = tps65910_i2c_read_u8(TPS65910_I2C_ID0, &val, TPS65910_REG_DEVCTRL2);
+	if (err) {
+		printk(KERN_ERR "Unable to read TPS65910_REG_DEVCTRL2 reg\n");
+		return -EIO;
+	}	
+	/* Set sleep state active high and allow device turn-off after PWRON long press */
+	val |= (TPS65910_DEV2_SLEEPSIG_POL | TPS65910_DEV2_PWON_LP_OFF);
+
+	err = tps65910_i2c_write_u8(TPS65910_I2C_ID0, val,
+			TPS65910_REG_DEVCTRL2);
+	if (err) {
+		printk(KERN_ERR "Unable to write TPS65910_REG_DEVCTRL2 reg\n");
+		return -EIO;
+	}
+
+	/* Set the maxinum load current */
+	/* VDD1 */
+	err = tps65910_i2c_read_u8(TPS65910_I2C_ID0, &val, TPS65910_REG_VDD1);
+	if (err) {
+		printk(KERN_ERR "Unable to read TPS65910_REG_VDD1 reg\n");
+		return -EIO;
+	}
+
+	val |= (1<<5);
+	err = tps65910_i2c_write_u8(TPS65910_I2C_ID0, val, TPS65910_REG_VDD1);
+	if (err) {
+		printk(KERN_ERR "Unable to write TPS65910_REG_VDD1 reg\n");
+		return -EIO;
+	}
+
+	/* VDD2 */
+	err = tps65910_i2c_read_u8(TPS65910_I2C_ID0, &val, TPS65910_REG_VDD2);
+	if (err) {
+		printk(KERN_ERR "Unable to read TPS65910_REG_VDD2 reg\n");
+		return -EIO;
+	}
+
+	val |= (1<<5);
+	err = tps65910_i2c_write_u8(TPS65910_I2C_ID0, val, TPS65910_REG_VDD2);
+	if (err) {
+		printk(KERN_ERR "Unable to write TPS65910_REG_VDD2 reg\n");
+		return -EIO;
+	}
+
+	/* VIO */
+	err = tps65910_i2c_read_u8(TPS65910_I2C_ID0, &val, TPS65910_REG_VIO);
+	if (err) {
+		printk(KERN_ERR "Unable to read TPS65910_REG_VIO reg\n");
+		return -EIO;
+	}
+
+	val |= (1<<6);
+	err = tps65910_i2c_write_u8(TPS65910_I2C_ID0, val, TPS65910_REG_VIO);
+	if (err) {
+		printk(KERN_ERR "Unable to write TPS65910_REG_VIO reg\n");
+		return -EIO;
+	}
+
+	/* Mask ALL interrupts */
+	err = tps65910_i2c_write_u8(TPS65910_I2C_ID0, 0xFF,
+			TPS65910_REG_INT_MSK);
+	if (err) {
+		printk(KERN_ERR "Unable to write TPS65910_REG_INT_MSK reg\n");
+		return -EIO;
+	}
+	err = tps65910_i2c_write_u8(TPS65910_I2C_ID0, 0x03,
+			TPS65910_REG_INT_MSK2);
+	if (err) {
+		printk(KERN_ERR "Unable to write TPS65910_REG_INT_MSK2 reg\n");
+		return -EIO;
+	}
+	
+	/* Set RTC Power, disable Smart Reflex in DEVCTRL_REG */
+	val = 0;
+	val |= (TPS65910_SR_CTL_I2C_SEL);
+	err = tps65910_i2c_write_u8(TPS65910_I2C_ID0, val,
+			TPS65910_REG_DEVCTRL);
+	if (err) {
+		printk(KERN_ERR "Unable to write TPS65910_REG_DEVCTRL reg\n");
+		return -EIO;
+	}
+
+	printk(KERN_INFO "TPS65910 Set default voltage.\n");
+#if 1
+	/* VDIG1 Set the default voltage from 1800mV to 2700 mV for camera io */
+	val = 0x01;
+	val |= (0x03 << 2);
+	err = tps65910_i2c_write_u8(TPS65910_I2C_ID0, val, TPS65910_REG_VDIG1);
+	if (err) {
+		printk(KERN_ERR "Unable to read TPS65910 Reg at offset 0x%x= \
+				\n", TPS65910_REG_VDIG1);
+		return -EIO;
+	}
+#endif
+
+#if 1
+#ifdef CONFIG_MACH_A80HTN 
+	/* VADC Set the default voltage 1800mV for camera DVDD */
+	val = 0x01;
+	err = tps65910_i2c_write_u8(TPS65910_I2C_ID0, val, TPS65910_REG_VDAC);
+	if (err) {
+		printk(KERN_ERR "Unable to read TPS65910 Reg at offset 0x%x= \
+				\n", TPS65910_REG_VDIG1);
+		return -EIO;
+	}
+#endif
+#endif
+
+#if 0
+	/* VDD1 whitch suplies for core Set the default voltage: 1150 mV(47)*/
+	val = 47;	
+	err = tps65910_i2c_write_u8(TPS65910_I2C_ID0, val, TPS65910_REG_VDD1_OP);
+	if (err) {
+		printk(KERN_ERR "Unable to read TPS65910 Reg at offset 0x%x= \
+				\n", TPS65910_REG_VDD1_OP);
+		return -EIO;
+	}
+#endif
+
+#if 0
+	/* VDD2 whitch suplies for ddr3 Set the default voltage: 1087 * 1.25mV(41)*/
+	val = 42;	
+	err = tps65910_i2c_write_u8(TPS65910_I2C_ID0, val, TPS65910_REG_VDD2_OP);
+	if (err) {
+		printk(KERN_ERR "Unable to read TPS65910 Reg at offset 0x%x= \
+				\n", TPS65910_REG_VDD2_OP);
+		return -EIO;
+	}
+#endif
+
+#if 1
+	/* VAUX2 whitch suplies for LCD Set the default voltage: 1290mV*/
+	val = 0x09;	
+	err = tps65910_i2c_write_u8(TPS65910_I2C_ID0, val, TPS65910_REG_VAUX2);
+	if (err) {
+		printk(KERN_ERR "Unable to read TPS65910 Reg at offset 0x%x= \
+				\n", TPS65910_REG_VAUX2);
+		return -EIO;
+	}
+#endif
+	/* initilize all ISR work as NULL, specific driver will
+	 * assign function(s) later.
+	 */
+	for (i = 0; i < TPS65910_MAX_IRQS; i++)
+		pdata->handlers[i] = NULL;
+
+	return 0;
+}
+
+struct tps65910_platform_data rk29_tps65910_data = {
+	.irq_num 	= (unsigned)TPS65910_HOST_IRQ,
+	.gpio  		= NULL,
+	.vio   		= &rk29_regulator_vio,
+	.vdd1  		= &rk29_regulator_vdd1,
+	.vdd2  		= &rk29_regulator_vdd2,
+	.vdd3  		= NULL,
+	.vdig1		= &rk29_regulator_vdig1,
+	.vdig2		= &rk29_regulator_vdig2,
+	.vaux33		= &rk29_regulator_vaux33,
+	.vmmc		= &rk29_regulator_vmmc,
+	.vaux1		= &rk29_regulator_vaux1,
+	.vaux2		= &rk29_regulator_vaux2,
+	.vdac		= &rk29_regulator_vdac,
+	.vpll		= &rk29_regulator_vpll,
+	.board_tps65910_config = rk29_tps65910_config,
+};
+#endif /* CONFIG_TPS65910_CORE */
+
+
 /*****************************************************************************************
  * i2c devices
  * author: kfx@rock-chips.com
@@ -1612,6 +1986,14 @@ static struct i2c_board_info __initdata board_i2c0_devices[] = {
 		.irq            = RK29_PIN0_PA1,
 	},
 #endif
+#if defined(CONFIG_GS_MMA7660)
+	{
+		.type    		= "mma7660",
+		.addr           = 0x4c,
+		.flags			= 0,
+		.irq            = MMA8452_INT_PIN,
+	},
+#endif
 #if defined (CONFIG_GS_MMA8452)
     {
       .type           = "gs_mma8452",
@@ -1694,8 +2076,30 @@ static struct i2c_board_info __initdata board_i2c0_devices[] = {
 };
 #endif
 #if defined (CONFIG_ANX7150)
+static int anx7150_io_init(void)
+{
+	int ret = 0;
+#ifdef GPIO_ANX7150_RST
+	ret = gpio_request(GPIO_ANX7150_RST, "anx7150 reset");
+	if(ret)
+	{
+		gpio_free(GPIO_ANX7150_RST);
+		ret = gpio_request(GPIO_ANX7150_RST, "anx7150 reset");
+	}
+#ifdef ANX7150_RST_MUX_NAME
+	rk29_mux_api_set(ANX7150_RST_MUX_NAME, ANX7150_RST_MUX_MODE);
+#endif
+	gpio_direction_output(GPIO_ANX7150_RST, GPIO_HIGH);
+	gpio_set_value(GPIO_ANX7150_RST, GPIO_HIGH);
+	mdelay(1);
+	gpio_set_value(GPIO_ANX7150_RST, GPIO_LOW);
+	mdelay(20);
+	gpio_set_value(GPIO_ANX7150_RST, GPIO_HIGH);
+#endif
+}
+
 struct hdmi_platform_data anx7150_data = {
-       //.io_init = anx7150_io_init,
+       .io_init = anx7150_io_init,
 };
 #endif
 #ifdef CONFIG_I2C1_RK29
@@ -1776,6 +2180,15 @@ static struct i2c_board_info __initdata board_i2c2_devices[] = {
 		.irq	=RK29_PIN0_PA2, // support goodix tp detect, 20110706
 		.platform_data = &ft5406_info,
     },
+#endif
+#if defined (CONFIG_TPS65910_CORE)
+	{
+		.type           = "tps659102",
+		.addr           = TPS65910_I2C_ID0,
+		.flags          = 0,
+		.irq            = TPS65910_HOST_IRQ,
+		.platform_data  = &rk29_tps65910_data,
+	},
 #endif
 };
 #endif
@@ -2356,10 +2769,6 @@ static int rk29_sdmmc1_cfg_gpio(void)
 	return 0;
 }
 
-
-
-#define RK29SDK_WIFI_SDIO_CARD_DETECT_N    RK29_PIN1_PD6
-
 struct rk29_sdmmc_platform_data default_sdmmc1_data = {
 	.host_ocr_avail = (MMC_VDD_25_26|MMC_VDD_26_27|MMC_VDD_27_28|MMC_VDD_28_29|
 					   MMC_VDD_29_30|MMC_VDD_30_31|MMC_VDD_31_32|
@@ -2414,9 +2823,6 @@ int rk29sdk_wifi_power_state = 0;
 int rk29sdk_bt_power_state = 0;
 
 #ifdef CONFIG_WIFI_CONTROL_FUNC
-#define RK29SDK_WIFI_BT_GPIO_POWER_N       RK29_PIN5_PD6
-#define RK29SDK_WIFI_GPIO_RESET_N          RK29_PIN6_PC0
-#define RK29SDK_BT_GPIO_RESET_N            RK29_PIN6_PC4
 
 static int rk29sdk_wifi_cd = 0;   /* wifi virtual 'card detect' status */
 static void (*wifi_status_cb)(int card_present, void *dev_id);
@@ -3156,7 +3562,7 @@ static void __init machine_rk29_init_irq(void)
 }
 
 static struct cpufreq_frequency_table freq_table[] = {
-        { .index =  950000, .frequency =  204000 },
+/* { .index =  950000, .frequency =  204000 },
 	{ .index = 1050000, .frequency =  300000 },
 	{ .index = 1100000, .frequency =  408000 },
 	//{ .index = 1200000, .frequency =  408000 },
@@ -3166,6 +3572,11 @@ static struct cpufreq_frequency_table freq_table[] = {
 	{ .index = 1300000, .frequency = 1104000 },
         { .index = 1350000, .frequency = 1176000 },
         { .index = 1400000, .frequency = 1200000 },
+*/
+	{ .index = 1175000, .frequency =  408000 },
+	{ .index = 1175000, .frequency =  816000 },
+	{ .index = 1275000, .frequency = 1008000 },
+
 	{ .frequency = CPUFREQ_TABLE_END },
 };
 
@@ -3201,7 +3612,7 @@ static void __init machine_rk29_board_init(void)
 	rk29sdk_init_wifi_mem();
 #endif
 
-	board_usb_detect_init(RK29_PIN0_PA0);
+	board_usb_detect_init(GPIO_USB_INT);
 #if defined(CONFIG_RK_IRDA) || defined(CONFIG_BU92747GUW_CIR)
 	smc0_init(NULL);
 	bu92747guw_io_init();
@@ -3245,3 +3656,4 @@ MACHINE_START(RK29, "RK29board")
 	.init_machine	= machine_rk29_board_init,
 	.timer		= &rk29_timer,
 MACHINE_END
+
