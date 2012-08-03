@@ -24,6 +24,7 @@
 #include <mach/iomux.h>
 #include <linux/wakelock.h>
 #include <linux/timer.h>
+#include <mach/board.h>
 
 #if 0
 #define DBG(x...)   printk(KERN_INFO x)
@@ -43,11 +44,7 @@ struct bt_ctrl
 #endif
 };
 
-#define BT_GPIO_POWER           RK29_PIN5_PD6
 #define IOMUX_BT_GPIO_POWER     rk29_mux_api_set(GPIO5D6_SDMMC1PWREN_NAME, GPIO5H_GPIO5D6);
-#define BT_GPIO_RESET          	RK29_PIN6_PC4
-#define BT_GPIO_WAKE_UP         RK29_PIN6_PC5
-#define BT_GPIO_WAKE_UP_HOST    //RK2818_PIN_PA7
 #define IOMUX_BT_GPIO_WAKE_UP_HOST() //rk2818_mux_api_set(GPIOA7_FLASHCS3_SEL_NAME,0);
 
 #define BT_WAKE_LOCK_TIMEOUT    10 //s
@@ -61,7 +58,7 @@ struct bt_ctrl gBtCtrl;
 #if BT_WAKE_HOST_SUPPORT
 void resetBtHostSleepTimer(void)
 {
-    mod_timer(&(gBtCtrl.tl),jiffies + BT_WAKE_LOCK_TIMEOUT*HZ);//‘Ÿ÷ÿ–¬…Ë÷√≥¨ ±÷µ°£    
+    mod_timer(&(gBtCtrl.tl),jiffies + BT_WAKE_LOCK_TIMEOUT*HZ);//           o    °£    
 }
 
 void btWakeupHostLock(void)
@@ -77,7 +74,7 @@ void btWakeupHostUnlock(void)
 {
     if(gBtCtrl.b_HostWake == true){        
         DBG("*************************UnLock\n");
-        wake_unlock(&(gBtCtrl.bt_wakelock));  //»√œµÕ≥ÀØ√ﬂ    
+        wake_unlock(&(gBtCtrl.bt_wakelock));  //    ƒ  ª      
         gBtCtrl.b_HostWake = false;
     }    
 }
@@ -151,13 +148,13 @@ static int bcm4329_set_block(void *data, bool blocked)
 #if BT_WAKE_HOST_SUPPORT     
             btWakeupHostUnlock();
 #endif
-		if (!rk29sdk_wifi_power_state) {
-			gpio_set_value(BT_GPIO_POWER, GPIO_LOW);  /* bt power off */
-    		mdelay(20);	
-    		pr_info("bt shut off power\n");
-		}else {
+//		if (!rk29sdk_wifi_power_state) {
+//			gpio_set_value(BT_GPIO_POWER, GPIO_LOW);  /* bt power off */
+//    		mdelay(20);	
+//    		pr_info("bt shut off power\n");
+//		}else {
 			pr_info("bt shouldn't shut off power, wifi is using it!\n");
-		}
+//		}
 
 		gpio_set_value(BT_GPIO_RESET, GPIO_LOW);  /* bt reset active*/
 		mdelay(20);
@@ -246,7 +243,7 @@ static int __devexit bcm4329_rfkill_remove(struct platform_device *pdev)
 		rfkill_unregister(gBtCtrl.bt_rfk);
 	gBtCtrl.bt_rfk = NULL;
 #if BT_WAKE_HOST_SUPPORT	
-    del_timer(&(gBtCtrl.tl));//…æµÙ∂® ±∆˜
+    del_timer(&(gBtCtrl.tl));//     ®   ~
     btWakeupHostUnlock();
     wake_lock_destroy(&(gBtCtrl.bt_wakelock));
 #endif    

@@ -32,8 +32,20 @@
 #include <linux/android_power.h>
 #endif
 
+#if 0
+#define dprint(format, x...) printk("MGQ: "format, ## x)
+#else
+#define dprint(format, x...) //
+#endif
+
+
 //#define RK28_PRINT
 //#include <asm/arch/rk28_debug.h>
+
+#define XSENSIT	1 //(11)
+#define YSENSIT 1 //	(12)
+#define ZSENSIT 1 //	(5)
+
 #if 0
 #define rk28printk(x...) printk(x)
 #else
@@ -121,8 +133,8 @@ static int mma7660_set_rate(struct i2c_client *client, char rate)
 	
 	if (rate > 128)
         return -EINVAL;
-	rk28printk("[ZWP]%s,rate = %d\n",__FUNCTION__,rate);
-	//ÒòÎªÔö¼ÓÁËÂË²¨¹¦ÄÜ,¼´Ã¿RawDataLength´Î²ÅÉÏ±¨Ò»´Î,ËùÒÔÌáÉýgsensorÁ½¸öµµ¼¶
+	printk("[ZWP]%s,rate = %d\n",__FUNCTION__,rate);
+	//   ª         ¨ ¦Ä ,    RawDataLength       ¨    , ·   á ˜gsensor        
 	if(rate > 2)
 		rate -= 2;
 	rk28printk("[ZWP]%s,new rate = %d\n",__FUNCTION__,rate);
@@ -220,7 +232,7 @@ static inline int mma7660_convert_to_int(char value)
     if (value < MMA7660_BOUNDARY) {
        result = value * MMA7660_GRAVITY_STEP;
     } else {
-       result = ~(((~value & 0x3f) + 1)* MMA7660_GRAVITY_STEP) + 1;
+       result = ~(((~value & 0x3f) + 1)* MMA7660_GRAVITY_STEP ) + 1;
     }
 
     return result;
@@ -236,10 +248,11 @@ static void mma7660_report_value(struct i2c_client *client, struct mma7660_axis 
     input_report_abs(mma7660->input_dev, ABS_Y, axis->y);
     input_report_abs(mma7660->input_dev, ABS_Z, axis->z);
     input_sync(mma7660->input_dev);
-    rk28printk("Gsensor x==%d  y==%d z==%d\n",axis->x,axis->y,axis->z);
+   // rk28printk("Gsensor x==%d  y==%d z==%d\n",axis->x,axis->y,axis->z);
+//printk("Gsensor x==%d  y==%d z==%d\n",axis->x,axis->y,axis->z);
 }
 
-#define RawDataLength 4
+#define RawDataLength 2
 int RawDataNum;
 int Xaverage, Yaverage, Zaverage;
 
@@ -247,8 +260,9 @@ static int mma7660_get_data(struct i2c_client *client)
 {
 	char buffer[3];
 	int ret;
+	int x, y, z;
     struct mma7660_axis axis;
-    //struct rk2818_gs_platform_data *pdata = client->dev.platform_data;
+    struct mma8452_platform_data *pdata = client->dev.platform_data;
     do {
         memset(buffer, 0, 3);
         buffer[0] = MMA7660_REG_X_OUT;
@@ -257,40 +271,77 @@ static int mma7660_get_data(struct i2c_client *client)
             return ret;
     } while ((buffer[0] & 0x40) || (buffer[1] & 0x40) || (buffer[2] & 0x40));
 
-	axis.x = mma7660_convert_to_int(buffer[MMA7660_REG_X_OUT]);
-	axis.y = -mma7660_convert_to_int(buffer[MMA7660_REG_Y_OUT]);
-	axis.z = -mma7660_convert_to_int(buffer[MMA7660_REG_Z_OUT]);
+	x =  mma7660_convert_to_int(buffer[MMA7660_REG_Y_OUT])*YSENSIT;
+	y =  mma7660_convert_to_int(buffer[MMA7660_REG_X_OUT])*XSENSIT;
+	z =  mma7660_convert_to_int(buffer[MMA7660_REG_Z_OUT])*ZSENSIT;
+
 /*
-	if(pdata->swap_xy)
-	{
-		axis.y = -axis.y;
-		swap(axis.x,axis.y);		
-	}
-*/
-	//¼ÆËãRawDataLength´ÎÖµµÄÆ½¾ùÖµ
-	Xaverage += axis.x;
-	Yaverage += axis.y;
-	Zaverage += axis.z;
-    rk28printk( "%s: ------------------mma7660_GetData axis = %d  %d  %d,average=%d %d %d--------------\n",
-           __func__, axis.x, axis.y, axis.z,Xaverage,Yaverage,Zaverage); 
-	
-	if((++RawDataNum)>=RawDataLength){
-		RawDataNum = 0;
-		axis.x = Xaverage/RawDataLength;
-		axis.y = Yaverage/RawDataLength;
-		axis.z = Zaverage/RawDataLength;
-	    mma7660_report_value(client, &axis);
-		Xaverage = Yaverage = Zaverage = 0;
-	}
-#if 0	
-  //  rk28printk( "%s: ------------------mma7660_GetData axis = %d  %d  %d--------------\n",
-  //         __func__, axis.x, axis.y, axis.z); 
-     
-    //memcpy(sense_data, &axis, sizeof(axis));
-    mma7660_report_value(client, &axis);
-	//atomic_set(&data_ready, 0);
-	//wake_up(&data_ready_wq);
+#if defined(CONFIG_MACH_A8N)
+	axis.x = y;
+	axis.y = -x;
+	axis.z = z;
+#elif  defined(CONFIG_MACH_A70HT3N)
+	axis.x = y;
+	axis.y = -z;
+	axis.z = -x;
+#elif  defined(CONFIG_MACH_M805) 
+	axis.x = y;
+	axis.y = -z;
+	axis.z = -x;
+#elif  defined(CONFIG_MACH_M815HC)
+	axis.x = x;
+	axis.y = -z;
+	axis.z = y;
+
+#elif  defined(CONFIG_MACH_M727)
+	axis.x = x;
+	axis.y = y;
+	axis.z = z;
+#elif  defined(CONFIG_MACH_M727HCN) || defined(CONFIG_MACH_M712HC) || defined(CONFIG_MACH_M723HR) || defined(CONFIG_MACH_M727HD)
+	axis.x = -x;
+	axis.y = -z;
+	axis.z = -y;
+#elif  defined(CONFIG_MACH_M719HC) 
+	axis.x = -x;
+	axis.y = -z;
+	axis.z = -y;
+
+#elif  defined(CONFIG_MACH_M732HCN) 
+	axis.x = y;
+	axis.y = -z;
+	axis.z = -x;
+
+#elif  defined(CONFIG_MACH_M907HD)
+	axis.x = -x;
+	axis.y = -y;
+	axis.z = z;
+#elif  defined(CONFIG_MACH_M722HCN)
+	axis.x = x;
+	axis.y = y;
+	axis.z = z;
+#elif  defined(CONFIG_MACH_A80HTN)
+	axis.x = -y;
+	axis.z = x;
+	axis.y = -z;
+#elif  defined(CONFIG_MACH_M805HC) || defined(CONFIG_MACH_M805HD) 
+	axis.x = x;
+	axis.y = -z;
+	axis.z = y;
+#else
+	axis.x = y;
+	axis.y = -x;
+	axis.z = z;
 #endif
+*/
+
+	axis.x = x;
+	axis.y = -z;
+	axis.z = y;
+
+	//	printk("l=%-4d,x=%-5d, y=%-5d, z=%-5d. %s:\n",__LINE__,axis.x, axis.y, axis.z, __func__);
+	//	printk("%s: x=%-5d, y=%-5d, z=%-d\n",__func__, axis.x, axis.y, axis.z);
+		mma7660_report_value(client, &axis);
+	//	Xaverage = Yaverage = Zaverage = 0;
 	return 0;
 }
 
@@ -319,8 +370,7 @@ static int mma7660_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-static int mma7660_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
-	   unsigned long arg)
+static int mma7660_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 
 	void __user *argp = (void __user *)arg;
@@ -419,7 +469,7 @@ static struct file_operations mma7660_fops = {
 
 static struct miscdevice mma7660_device = {
 	.minor = MISC_DYNAMIC_MINOR,
-	.name = "gsensor",//"mma7660_daemon",
+	.name = "mma8452_daemon",
 	.fops = &mma7660_fops,
 };
 
@@ -469,13 +519,13 @@ static int mma7660_resume(struct i2c_client *client)
 #endif
 
 static const struct i2c_device_id mma7660_id[] = {
-		{"gs_mma7660", 0},
+		{"mma7660", 0},
 		{ }
 };
 
 static struct i2c_driver mma7660_driver = {
 	.driver = {
-		.name = "gs_mma7660",
+		.name = "mma7660",
 	    },
 	.id_table 	= mma7660_id,
 	.probe		= mma7660_probe,
@@ -526,6 +576,7 @@ static int  mma7660_probe(struct i2c_client *client, const struct i2c_device_id 
 	struct mma7660_data *mma7660;
 	int err;
 	
+	dprint("l=%d,%s:\n",__LINE__, __func__);
 	Xaverage = Yaverage = Zaverage = RawDataNum = 0;
 
 	mma7660 = kzalloc(sizeof(struct mma7660_data), GFP_KERNEL);
@@ -568,7 +619,7 @@ static int  mma7660_probe(struct i2c_client *client, const struct i2c_device_id 
 	/* z-axis acceleration */
 	input_set_abs_params(mma7660->input_dev, ABS_Z, -1500, 1500, 0, 0);
 
-	mma7660->input_dev->name = "compass";
+	mma7660->input_dev->name = "gsensor";
 	mma7660->input_dev->dev.parent = &client->dev;
 
 	err = input_register_device(mma7660->input_dev);
@@ -605,6 +656,7 @@ static int  mma7660_probe(struct i2c_client *client, const struct i2c_device_id 
 #if 0	
 	mma7660_start(client, MMA7660_RATE_32);
 #endif
+	dprint("l=%d,%s:loaded successfully.\n",__LINE__, __func__);
 	return 0;
 
 exit_gsensor_sysfs_init_failed:
@@ -625,6 +677,7 @@ exit_alloc_data_failed:
 
 static int __init mma7660_i2c_init(void)
 {
+	dprint("l=%d,%s:\n",__LINE__, __func__);
 	return i2c_add_driver(&mma7660_driver);
 }
 
@@ -635,6 +688,7 @@ static void __exit mma7660_i2c_exit(void)
 
 module_init(mma7660_i2c_init);
 module_exit(mma7660_i2c_exit);
+
 
 
 

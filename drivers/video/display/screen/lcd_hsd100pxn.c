@@ -6,32 +6,30 @@
 #include <mach/board.h>
 #include "screen.h"
 
-/*
-// Base 
+
+/* Base */
 #define OUT_TYPE		SCREEN_RGB
 
 #define OUT_FACE		OUT_D888_P666  
-#define OUT_CLK			40000000
-#define LCDC_ACLK        150000000//312000000           //29 lcdc axi DMA ÆµÂÊ
+#define OUT_CLK			65000000
+#define LCDC_ACLK        500000000//312000000           //29 lcdc axi DMA ÆµÂÊ
 
-// Timing 
-#define H_PW			1
-#define H_BP			46
-#define H_VD			800
+/* Timing */
+#define H_PW			10
+#define H_BP			110
+#define H_VD			1024
 #define H_FP			210
 
-#define V_PW			3
-#define V_BP			23
-#define V_VD			480
-#define V_FP			12
+#define V_PW			10
+#define V_BP			20
+#define V_VD			768
+#define V_FP			18
 
-
-// Other 
+#define LCD_WIDTH       162
+#define LCD_HEIGHT      121
+/* Other */
 #define DCLK_POL		0
-#define SWAP_RB			0   */
-
-#define LCD_WIDTH       170
-#define LCD_HEIGHT      128 
+#define SWAP_RB			0   
 
 void set_lcd_info(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 {

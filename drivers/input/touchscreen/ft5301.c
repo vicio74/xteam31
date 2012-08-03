@@ -29,8 +29,8 @@
 #define MAX_POINT  5
 
 
-#define SCREEN_MAX_X 800
-#define SCREEN_MAX_Y 600
+#define SCREEN_MAX_X 1024
+#define SCREEN_MAX_Y 768
 
 #define PRESS_MAX 200
 

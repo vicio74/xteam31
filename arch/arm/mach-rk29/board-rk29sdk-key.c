@@ -18,13 +18,13 @@ static struct rk29_keys_button key_button[] = {
 	{
 		.desc	= "vol+",
 		.code	= KEY_VOLUMEUP,
-		.gpio	= RK29_PIN6_PA1, /*RK29_PIN6_PA3,*/
+		.gpio	= RK29_PIN6_PA2, /*RK29_PIN6_PA3,*/
 		.active_low = PRESS_LEV_LOW,
 	},
 	{
 		.desc	= "vol-",
 		.code	= KEY_VOLUMEDOWN,
-		.gpio	= RK29_PIN6_PA2, /*RK29_PIN6_PA0,*/
+		.gpio	= RK29_PIN6_PA1, /*RK29_PIN6_PA0,*/
 		.active_low = PRESS_LEV_LOW,
 	},
         /*

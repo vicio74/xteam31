@@ -22,7 +22,7 @@
 
 #define V_PW			3
 #define V_BP			29
-#define V_VD			600
+#define V_VD			480
 #define V_FP			13
 
 /* Other */
@@ -30,7 +30,7 @@
 #define SWAP_RB			0
 
 #define LCD_WIDTH       800    //need modify
-#define LCD_HEIGHT      600
+#define LCD_HEIGHT      480
 
 #define TXD_PORT        gLcd_info->txd_pin
 #define CLK_PORT        gLcd_info->clk_pin

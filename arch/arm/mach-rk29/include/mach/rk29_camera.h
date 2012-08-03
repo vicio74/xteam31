@@ -49,6 +49,7 @@
 #define RK29_CAM_SENSOR_MT9P111 mt9p111
 #define RK29_CAM_SENSOR_MT9T111 mt9t111
 #define RK29_CAM_SENSOR_GT2005  gt2005
+#define RK29_CAM_SENSOR_GT2005_BACK  gt2005_back
 #define RK29_CAM_SENSOR_GC0307  gc0307
 #define RK29_CAM_SENSOR_GC0308  gc0308
 #define RK29_CAM_SENSOR_GC0309  gc0309
@@ -74,6 +75,7 @@
 #define RK29_CAM_SENSOR_NAME_MT9P111 "mt9p111"
 #define RK29_CAM_SENSOR_NAME_MT9T111 "mt9t111"
 #define RK29_CAM_SENSOR_NAME_GT2005  "gt2005"
+#define RK29_CAM_SENSOR_NAME_GT2005_BACK  "gt2005_back"
 #define RK29_CAM_SENSOR_NAME_GC0307  "gc0307"
 #define RK29_CAM_SENSOR_NAME_GC0308  "gc0308"
 #define RK29_CAM_SENSOR_NAME_GC0309  "gc0309"
@@ -99,6 +101,7 @@
 #define mt9t111_FULL_RESOLUTION    0x300000           // 3 megapixel
 #define mt9p111_FULL_RESOLUTION    0x500000           // 5 megapixel
 #define gt2005_FULL_RESOLUTION     0x200000           // 2 megapixel
+#define gt2005_back_FULL_RESOLUTION     0x200000           // 2 megapixel
 #define gc0308_FULL_RESOLUTION     0x30000            // 0.3 megapixel
 #define gc0309_FULL_RESOLUTION     0x30000            // 0.3 megapixel
 #define gc2015_FULL_RESOLUTION     0x200000           // 2 megapixel

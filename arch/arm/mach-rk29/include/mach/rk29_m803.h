@@ -13,44 +13,119 @@
  *
  * 
  */
-/***************************************************
- *
- *				    LCD  
- *
- **************************************************/
+
+// IRDA
+#define BU92747GUW_RESET_PIN         RK29_PIN3_PD4// INVALID_GPIO //
+#define BU92747GUW_RESET_MUX_NAME    GPIO3D4_HOSTWRN_NAME//NULL //
+#define BU92747GUW_RESET_MUX_MODE    GPIO3H_GPIO3D4//NULL //
+
+#define BU92747GUW_PWDN_PIN          RK29_PIN3_PD3//RK29_PIN5_PA7 //
+#define BU92747GUW_PWDN_MUX_NAME     GPIO3D3_HOSTRDN_NAME//GPIO5A7_HSADCDATA2_NAME //
+#define BU92747GUW_PWDN_MUX_MODE     GPIO3H_GPIO3D3//GPIO5L_GPIO5A7  //
+
+
+
+
+
+
+
+
+
+
+
+//TOUCH
+#define TOUCH_SCREEN_STANDBY_PIN          INVALID_GPIO    //VIP RK29_PIN6_PD1
+#define TOUCH_SCREEN_STANDBY_VALUE        GPIO_HIGH
+#define TOUCH_SCREEN_DISPLAY_PIN          INVALID_GPIO
+#define TOUCH_SCREEN_DISPLAY_VALUE        GPIO_HIGH
+
+/*****************************************************************************************
+ * lcd  devices
+ * author: zyw@rock-chips.com
+ *****************************************************************************************/
+//#ifdef  CONFIG_LCD_TD043MGEA1
 #define LCD_TXD_PIN          INVALID_GPIO
 #define LCD_CLK_PIN          INVALID_GPIO
 #define LCD_CS_PIN           INVALID_GPIO
-
+/*****************************************************************************************
+* frame buffe  devices
+* author: zyw@rock-chips.com
+*****************************************************************************************/
 #define FB_ID                       0
-#define FB_DISPLAY_ON_PIN           RK29_PIN6_PD1
-#define FB_LCD_STANDBY_PIN          RK29_PIN6_PD0
-#define FB_LCD_CABC_EN_PIN          INVALID_GPIO
+#define FB_DISPLAY_ON_PIN           RK29_PIN6_PD0   //VIP RK29_PIN6_PD1 //INVALID_GPIO // RK29_PIN6_PD0
+#define FB_LCD_STANDBY_PIN          RK29_PIN6_PD1   //VIP RK29_PIN6_PD0 // RK29_PIN6_PD1
+#define FB_LCD_CABC_EN_PIN          RK29_PIN6_PD2   //VIP INVALID_GPIO // RK29_PIN6_PD2
 #define FB_MCU_FMK_PIN              INVALID_GPIO
 
 #define FB_DISPLAY_ON_VALUE         GPIO_HIGH
 #define FB_LCD_STANDBY_VALUE        GPIO_HIGH
 
+
+//Gsensor
+#define MMA8452_INT_PIN   RK29_PIN0_PA3
+
+/**********************************************************************************************
+ *
+ *									WIFI/BT	
+ *
+ *********************************************************************************************/
+//#define GPIO_WIFI_POWER       RK29_PIN6_PC0
+#define GPIO_WIFI_POWER         RK29_PIN5_PD6
+#define GPIO_WIFI_RESET         RK29_PIN6_PC0
+
+//#define RK29SDK_WIFI_BT_GPIO_POWER_N       RK29_PIN5_PD6
+//#define RK29SDK_WIFI_GPIO_RESET_N          RK29_PIN6_PC0
+//#define RK29SDK_BT_GPIO_RESET_N            RK29_PIN6_PC4
+
+#define RK29SDK_WIFI_SDIO_CARD_DETECT_N    RK29_PIN1_PD6
+
+#define RK29SDK_WIFI_BT_GPIO_POWER_N       RK29_PIN5_PD6
+#define RK29SDK_WIFI_GPIO_RESET_N          RK29_PIN6_PC0
+#define RK29SDK_BT_GPIO_RESET_N            RK29_PIN6_PC4
+
+#define BT_GPIO_POWER           RK29_PIN5_PD6
+#define BT_GPIO_RESET          	RK29_PIN6_PC4
+#define BT_GPIO_WAKE_UP         RK29_PIN6_PC5
+#define BT_GPIO_WAKE_UP_HOST    //RK2818_PIN_PA7
+
+/***************************************************
+ *
+ *				    LCD  
+ *
+ **************************************************/
+//#define LCD_TXD_PIN          INVALID_GPIO
+//#define LCD_CLK_PIN          INVALID_GPIO
+//#define LCD_CS_PIN           INVALID_GPIO
+//
+//#define FB_ID                       0
+//#define FB_DISPLAY_ON_PIN           RK29_PIN6_PD1
+//#define FB_LCD_STANDBY_PIN          RK29_PIN6_PD0
+//#define FB_LCD_CABC_EN_PIN          INVALID_GPIO
+//#define FB_MCU_FMK_PIN              INVALID_GPIO
+
+//#define FB_DISPLAY_ON_VALUE         GPIO_HIGH
+//#define FB_LCD_STANDBY_VALUE        GPIO_HIGH
+
 /* Base */
-#define OUT_TYPE		SCREEN_RGB
-#define OUT_FACE		OUT_P888
-#define OUT_CLK			 40000000
-#define LCDC_ACLK       150000000     //29 lcdc axi DMA 撞楕
+//#define OUT_TYPE		SCREEN_RGB
+//#define OUT_FACE		OUT_P888
+//#define OUT_CLK			 40000000
+//#define LCDC_ACLK       150000000     //29 lcdc axi DMA 撞楕
 
 /* Timing */
-#define H_PW			1
-#define H_BP			46
-#define H_VD			800
-#define H_FP			210
+//#define H_PW			1
+//#define H_BP			46
+//#define H_VD			800
+//#define H_FP			210
 
-#define V_PW			3
-#define V_BP			23
-#define V_VD			600
-#define V_FP			12
+//#define V_PW			3
+//#define V_BP			23
+//#define V_VD			600
+//#define V_FP			12
 
 /* Other */
-#define DCLK_POL		0
-#define SWAP_RB			0
+//#define DCLK_POL		0
+//#define SWAP_RB			0
 
 /***************************************************
  *
@@ -71,13 +146,13 @@
 
 //#define LCD_DISP_ON_PIN
 
-#ifdef  LCD_DISP_ON_PIN
-#define BL_EN_MUX_NAME    GPIOF34_UART3_SEL_NAME
-#define BL_EN_MUX_MODE    IOMUXB_GPIO1_B34
-
-#define BL_EN_PIN         GPIO0L_GPIO0A5
-#define BL_EN_VALUE       GPIO_HIGH
-#endif
+//#ifdef  LCD_DISP_ON_PIN
+//#define BL_EN_MUX_NAME    GPIOF34_UART3_SEL_NAME
+//#define BL_EN_MUX_MODE    IOMUXB_GPIO1_B34
+//
+//#define BL_EN_PIN         GPIO0L_GPIO0A5
+//#define BL_EN_VALUE       GPIO_HIGH
+//#endif
 
 /***************************************************
  *
@@ -125,5 +200,21 @@
 //define  divider resistors for ADC sampling, units as K
 #define BAT_PULL_UP_R           549
 #define BAT_PULL_DOWN_R         200
+
+
+/*Inizio Sezione per Mediacom 810c ****************
+ *
+ *                    USB
+ *
+ **************************************************/
+#define GPIO_USB_INT			 RK29_PIN0_PA0
+#define MASS_STORAGE_NAME "M-MP810C"
+#define MASS_STORAGE_PRODUCT ""
+#define USB_PRODUCT_ID			0x2910
+#define ADB_PRODUCT_ID			0x0c02
+#define VENDOR_ID				0x0bb4
+#define ADB_PRODUCT_NAME		"rk2918"
+#define ADB_MANUFACTURE_NAME	"RockChip"
+
 
 

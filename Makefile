@@ -200,10 +200,10 @@ ARCH		?= arm
 #ifneq ($(wildcard ../prebuilt/linux-x86/toolchain/arm-eabi-4.4.0),)
 #CROSS_COMPILE	?= ../prebuilt/linux-x86/toolchain/arm-eabi-4.4.0/bin/arm-eabi-
 #endif
-#CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
+#CROSS_COMPILE   ?= arm-eabi-
+CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
+#CROSS_COMPILE	?= arm-eabi-
 
-#CROSS_COMPILE	?= ../toolchain/arm-eabi-4.4.0/bin/arm-eabi-
-CROSS_COMPILE	?= ../arm-2010.09/bin/arm-none-linux-gnueabi-
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
 SRCARCH 	:= $(ARCH)

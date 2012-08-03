@@ -472,20 +472,3 @@ static int inline board_usb_detect_init(unsigned gpio) { return 0; }
 void rk28_send_wakeup_key(void);
 
 #endif
-
-/*Inizio Sezione per Mediacom 810c ****************
- *
- *                    USB
- *
- **************************************************/
-#define GPIO_USB_INT			 RK29_PIN0_PA0
-#define MASS_STORAGE_NAME "M-MP810C"
-#define MASS_STORAGE_PRODUCT ""
-#define USB_PRODUCT_ID			0x2910
-#define ADB_PRODUCT_ID			0x0c02
-#define VENDOR_ID				0x0bb4
-#define ADB_PRODUCT_NAME		"rk2918"
-#define ADB_MANUFACTURE_NAME	"RockChip"
-
-
-
