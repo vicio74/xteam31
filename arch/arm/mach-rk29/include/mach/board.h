@@ -21,7 +21,7 @@
 #include <linux/types.h>
 #include <linux/timer.h>
 #include <linux/notifier.h>
-#include <mach/rk29_mp850i.h>
+#include <mach/board_mp850i.h>
 
 struct adc_battery_platform_data {
         int adc_chn;
