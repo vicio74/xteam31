@@ -28,9 +28,19 @@
 #define FT5X0X_SPEED 200*1000
 #define MAX_POINT  5
 
-
+#if defined (CONFIG_TOUCHSCREEN_1024X768)
 #define SCREEN_MAX_X 1024
 #define SCREEN_MAX_Y 768
+#elif defined (CONFIG_TOUCHSCREEN_1024X600)
+#define SCREEN_MAX_X 1024
+#define SCREEN_MAX_Y 600
+#elif defined (CONFIG_TOUCHSCREEN_800X600)
+#define SCREEN_MAX_X 800
+#define SCREEN_MAX_Y 600
+#elif defined (CONFIG_TOUCHSCREEN_800X480)
+#define SCREEN_MAX_X 800
+#define SCREEN_MAX_Y 480
+#endif
 
 #define PRESS_MAX 200
 
@@ -48,47 +58,6 @@ static struct early_suspend ft5x0x_early_suspend;
 
 #ifndef TOUCH_EN_LEVEL
 #define TOUCH_EN_LEVEL GPIO_HIGH
-#endif
-
-/***************************************************
- *
- *                      TOUCH
- *
- **************************************************/
-
-
-#define DEBOUNCE_REPTIME  3
-#define USE_TP_KEY	1	
-#define TOUCH_POWER_PIN			RK29_PIN6_PB0
-#define TOUCH_RESET_PIN			RK29_PIN6_PC3
-#define TOUCH_INT_PIN			RK29_PIN0_PA2
-#define TOUCH_USE_I2C2			1
-#define TOUCH_KEY_LED			RK29_PIN6_PA6
-
-
-#define	TP_USE_WAKEUP_PIN
-
-#define TOUCHKEY_ON_SCREEN
-/* For OuFei */
-#if 0
-#define TOUCH_KEY_MAP \
-		{ \
-				{850,	128, 	KEY_BACK},  /* back */ \
-				{850,	95,	KEY_F1},        /* home */ \
-				{850,	55,	KEY_HOME},		/* menu */ \
-				{850,	5,	KEY_SEARCH},    /* search */ \
-				{0,0,0} \
-		}
-
-/* for MuDong */
-#define TOUCH_KEY_MAP \
-		{ \
-				{850,	128, 	KEY_SEARCH},  /* search */ \
-				{850,	95,	KEY_HOME},        /* home */ \
-				{850,	55,	KEY_F1},      	  /* menu */ \
-				{850,	5,	KEY_BACK	},    /* back */ \
-				{0,0,0} \
-		}
 #endif
 
 static int  ft5x0x_probe(struct i2c_client *client, const struct i2c_device_id *id);
@@ -340,6 +309,8 @@ static int get_screen_key(int x, int y)
 	//const int span = 10;
 	//int idx;
 
+#if defined(CONFIG_MACH_M803) || defined(CONFIG_MACH_M900HC) || defined(CONFIG_MACH_M900HW) || defined(CONFIG_MACH_M907HC) || defined(CONFIG_MACH_M803HN) \
+	|| defined(CONFIG_MACH_M813) || defined(CONFIG_MACH_M805HC) || defined(CONFIG_MACH_M813HC) || defined(CONFIG_MACH_M803HC) || defined(CONFIG_MACH_M805HD) 
 	if (g_vid == VID_YM) {
 		rect rt[] = {
 			 {834,	0, 	KEY_SEARCH},  		/* search */ 
@@ -372,9 +343,89 @@ static int get_screen_key(int x, int y)
 		return scan_screen_key(x, y, rt);
 	}
 
+#elif defined(CONFIG_MACH_M803HD) || defined(CONFIG_MACH_M900HD) || defined(CONFIG_MACH_M900HDW) || defined(CONFIG_MACH_M807) || defined(CONFIG_MACH_M907HD)  \
+	|| defined(CONFIG_MACH_M813HD) 
+	if (g_vid == VID_YM) {
+		rect rt[] = {
+			 {1085,	5,	  KEY_SEARCH},    /* search */ 
+			 {1085,	70,	  KEY_HOMEPAGE},      /* home */ 
+			 {1085,	120,  KEY_MENU},        /* menu */ 
+			 {1085,	165,  KEY_BACK},	  /* back */ 
+			 {0,0,0},
+		};
 
+		return scan_screen_key(x, y, rt);
+	} else if (g_vid == VID_OF || g_vid == VID_YJ) {
+		rect rt[] = {
+			 {1085,	165, KEY_BACK},    /* back */ 
+			 {1085,	120, KEY_MENU},      /* home */ 
+			 {1085,	70,  KEY_HOMEPAGE},	   /* menu */ 
+			 {1085,	5,   KEY_SEARCH},  /* search */ 
+			 {0,0,0},
+		};
 
-	//const rect rt[]=
+		return scan_screen_key(x, y, rt);
+	} else if (g_vid == VID_MD || g_vid == 0x01) {
+		rect rt[] = {
+			{1085,	165,  KEY_SEARCH},  /* search */ 
+			{1085,	120,  KEY_HOMEPAGE},    /* home */ 
+			{1085,	70,   KEY_MENU},      /* menu */ 
+			{1085,	5,    KEY_BACK	},  /* back */ 
+			{0,0,0}, 
+		}; 
+
+		return scan_screen_key(x, y, rt);
+	}
+
+#elif defined(CONFIG_MACH_M726HN) || defined(CONFIG_MACH_M732HC) || defined(CONFIG_MACH_M732HCN) 
+	if (g_vid == VID_OF || g_vid == VID_YJ) {
+		rect rt[] = {
+			 {840,	5,		KEY_BACK},  	/* back */ 
+			 {840,	40,		KEY_MENU},        /* home */ 
+			 {840,	75,		KEY_HOMEPAGE},		/* menu */ 
+			 {840,	105,	KEY_SEARCH},    /* search */ 
+			 {0,0,0},
+		};
+
+		return scan_screen_key(x, y, rt);
+	} else if (g_vid == VID_MD) {
+		rect rt[] = {
+			{845,	5, 		KEY_SEARCH},  	/* search */ 
+			{845,	40,		KEY_HOMEPAGE},      /* home */ 
+			{845,	75,		KEY_MENU},      	/* menu */ 
+			{845,	105,	KEY_BACK},    	/* back */ 
+			{0,0,0}, 
+		}; 
+
+		return scan_screen_key(x, y, rt);
+	} else if (g_vid == VID_YM || g_vid == 0xC0) {
+		rect rt[] = {
+			{845,	5, 		KEY_SEARCH},  	/* search */ 
+			{845,	40,		KEY_HOMEPAGE},      /* home */ 
+			{845,	75,		KEY_MENU},      	/* menu */ 
+			{845,	105,	KEY_BACK},    	/* back */ 
+			{0,0,0}, 
+		}; 
+
+		return scan_screen_key(x, y, rt);
+	}
+
+#else
+	const rect rt[]=
+#if defined (TOUCH_KEY_MAP)
+	TOUCH_KEY_MAP;
+#else
+	{
+		{845,	5, 	KEY_SEARCH},          /* search */
+		{845,	40,	KEY_HOMEPAGE},            /* home */
+		{845,	75,	KEY_MENU},              /* menu */
+		{845,	104,	KEY_BACK	},    /* back */
+		{0,0,0}
+	};
+#endif
+	return scan_screen_key(x, y, rt);
+#endif
+
 	DBG("***x=%d, y=%d\n", x, y);
 	return 0;
 }

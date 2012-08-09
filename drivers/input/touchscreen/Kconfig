@@ -974,7 +974,7 @@ config TOUCHSCREEN_GT819
 	depends on I2C2_RK29
 
 config TOUCHSCREEN_FT5301
-	bool "FT5301  TOUCHSCREEN"
+	tristate "FT5301 based touchscreens: FT5301 Interface"
 	depends on I2C2_RK29
 
 config TOUCHSCREEN_FT5306
@@ -1021,3 +1021,35 @@ config ATMEL_MXT1386
                 help
                   RK29 ATMEL_MXT1386 touch debug
 endif
+
+config TOUCHSCREEN_SIZE
+	tristate "touchscreens size select"
+	depends on INPUT_TOUCHSCREEN
+
+	config TOUCHSCREEN_1024X768
+	tristate "1024X768 resolution"
+	depends on TOUCHSCREEN_SIZE
+
+	config TOUCHSCREEN_1024X600
+	tristate "1024X600 resolution"
+	depends on TOUCHSCREEN_SIZE
+	
+	config TOUCHSCREEN_800X600
+	tristate "800X600 resolution"
+	depends on TOUCHSCREEN_SIZE
+
+	config TOUCHSCREEN_800X480
+	tristate "800X480 resolution"
+	depends on TOUCHSCREEN_SIZE
+
+config SCREEN_DISPLAY
+	tristate "screen display direction"
+	depends on INPUT_TOUCHSCREEN
+	
+	config LANDSCAPE_DISPLAY
+	tristate "LANDSCAPE DISPLAY"
+	depends on SCREEN_DISPLAY
+
+	config PORTRAIT_DISPLAY
+	tristate "PORTRAIT DISPLAY"
+	depends on SCREEN_DISPLAY
