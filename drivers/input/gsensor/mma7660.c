@@ -134,7 +134,7 @@ static int mma7660_set_rate(struct i2c_client *client, char rate)
 	if (rate > 128)
         return -EINVAL;
 	printk("[ZWP]%s,rate = %d\n",__FUNCTION__,rate);
-	//   ª         ¨ ¦Ä ,    RawDataLength       ¨    , ·   á ˜gsensor        
+	//ÒòÎªÔö¼ÓÁËÂË²¨¹¦ÄÜ,¼´Ã¿RawDataLength´Î²ÅÉÏ±¨Ò»´Î,ËùÒÔÌáÉýgsensorÁ½¸öµµ¼¶
 	if(rate > 2)
 		rate -= 2;
 	rk28printk("[ZWP]%s,new rate = %d\n",__FUNCTION__,rate);
@@ -262,7 +262,7 @@ static int mma7660_get_data(struct i2c_client *client)
 	int ret;
 	int x, y, z;
     struct mma7660_axis axis;
-    struct mma8452_platform_data *pdata = client->dev.platform_data;
+    //struct mma8452_platform_data *pdata = client->dev.platform_data;
     do {
         memset(buffer, 0, 3);
         buffer[0] = MMA7660_REG_X_OUT;
@@ -275,7 +275,6 @@ static int mma7660_get_data(struct i2c_client *client)
 	y =  mma7660_convert_to_int(buffer[MMA7660_REG_X_OUT])*XSENSIT;
 	z =  mma7660_convert_to_int(buffer[MMA7660_REG_Z_OUT])*ZSENSIT;
 
-/*
 #if defined(CONFIG_MACH_A8N)
 	axis.x = y;
 	axis.y = -x;
@@ -332,16 +331,39 @@ static int mma7660_get_data(struct i2c_client *client)
 	axis.y = -x;
 	axis.z = z;
 #endif
-*/
 
-	axis.x = x;
-	axis.y = -z;
-	axis.z = y;
+	//¼ÆËãRawDataLength´ÎÖµµÄÆ½¾ùÖµ
+	Xaverage += axis.x;
+	Yaverage += axis.y;
+	Zaverage += axis.z;
+    rk28printk( "%s: ------------------mma7660_GetData axis = %d  %d  %d,average=%d %d %d--------------\n",
+           __func__, axis.x, axis.y, axis.z,Xaverage,Yaverage,Zaverage); 
+	
+	if((++RawDataNum)>=RawDataLength){
+		RawDataNum = 0;
+		axis.x = Xaverage/RawDataLength;
+		axis.y = Yaverage/RawDataLength;
+		axis.z = Zaverage/RawDataLength;
+	    mma7660_report_value(client, &axis);
+		Xaverage = Yaverage = Zaverage = 0;
+	}
+
+#if 0
+
+  	//  rk28printk( "%s: ------------------mma7660_GetData axis = %d  %d  %d--------------\n",
+  	//         __func__, axis.x, axis.y, axis.z); 
 
 	//	printk("l=%-4d,x=%-5d, y=%-5d, z=%-5d. %s:\n",__LINE__,axis.x, axis.y, axis.z, __func__);
 	//	printk("%s: x=%-5d, y=%-5d, z=%-d\n",__func__, axis.x, axis.y, axis.z);
-		mma7660_report_value(client, &axis);
 	//	Xaverage = Yaverage = Zaverage = 0;
+     
+    //memcpy(sense_data, &axis, sizeof(axis));
+    mma7660_report_value(client, &axis);
+	//atomic_set(&data_ready, 0);
+	//wake_up(&data_ready_wq);
+
+#endif
+
 	return 0;
 }
 
@@ -370,7 +392,7 @@ static int mma7660_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-static int mma7660_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+static long mma7660_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 
 	void __user *argp = (void __user *)arg;
