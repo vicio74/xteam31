@@ -26,14 +26,13 @@ config LOGO_LINUX_VGA16
 config LOGO_LINUX_CLUT224
 	bool "Standard 224-color Linux logo"
 	default y
+
 config LOGO_OEM_CLUT224
 	bool "224-color OEM Linux logo"
 	default n
 	help
 	  This logo option is for all OEM projects, the booting logo will come from OEM's requrement.
-config LOGO_N90_CLUT224
-	bool "Standard 224-color Linux logo for N90"
-	default y
+
 config LOGO_BLACKFIN_VGA16
 	bool "16-colour Blackfin Processor Linux logo"
 	depends on BLACKFIN
@@ -92,9 +91,5 @@ config LOGO_M32R_CLUT224
 config LOGO_CHARGER_CLUT224
         bool "standard 224-color linux logo for rk2918 phone"
         default n
-
-config LOGO_G3_CLUT224
-	bool "Standard 224-color Linux logo for g3 phone"
-	default n
 
 endif # LOGO

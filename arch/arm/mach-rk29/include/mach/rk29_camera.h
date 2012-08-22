@@ -33,11 +33,14 @@
 #define RK29_CAM_EIO_INVALID -1
 #define RK29_CAM_EIO_REQUESTFAIL -2
 
+#define RK29_CAM_SUPPORT_NUMS   6
+
 /*---------------- Camera Sensor Must Define Macro Begin  ------------------------*/
 #define RK29_CAM_SENSOR_OV7675 ov7675
 #define RK29_CAM_SENSOR_OV9650 ov9650
 #define RK29_CAM_SENSOR_OV2640 ov2640
 #define RK29_CAM_SENSOR_OV2655 ov2655
+#define RK29_CAM_SENSOR_OV2655_BACK ov2655_back
 #define RK29_CAM_SENSOR_OV2659 ov2659
 #define RK29_CAM_SENSOR_OV7690 ov7690
 #define RK29_CAM_SENSOR_OV3640 ov3640
@@ -59,11 +62,15 @@
 #define RK29_CAM_SENSOR_HI253  hi253
 #define RK29_CAM_SENSOR_HI704  hi704
 #define RK29_CAM_SENSOR_NT99250 nt99250
+#define RK29_CAM_SENSOR_NT99250_BACK nt99250_back
+#define RK29_CAM_SENSOR_FCAM fcam
+#define RK29_CAM_SENSOR_BCAM bcam
 
 #define RK29_CAM_SENSOR_NAME_OV7675 "ov7675"
 #define RK29_CAM_SENSOR_NAME_OV9650 "ov9650"
 #define RK29_CAM_SENSOR_NAME_OV2640 "ov2640"
 #define RK29_CAM_SENSOR_NAME_OV2655 "ov2655"
+#define RK29_CAM_SENSOR_NAME_OV2655_BACK "ov2655_back"
 #define RK29_CAM_SENSOR_NAME_OV2659 "ov2659"
 #define RK29_CAM_SENSOR_NAME_OV7690 "ov7690"
 #define RK29_CAM_SENSOR_NAME_OV3640 "ov3640"
@@ -85,11 +92,15 @@
 #define RK29_CAM_SENSOR_NAME_HI253  "hi253"
 #define RK29_CAM_SENSOR_NAME_HI704  "hi704"
 #define RK29_CAM_SENSOR_NAME_NT99250 "nt99250"
+#define RK29_CAM_SENSOR_NAME_NT99250_BACK "nt99250_back"
+#define RK29_CAM_SENSOR_NAME_FCAM "fcam"
+#define RK29_CAM_SENSOR_NAME_BCAM "bcam"
 
 #define ov7675_FULL_RESOLUTION     0x30000            // 0.3 megapixel
 #define ov9650_FULL_RESOLUTION     0x130000           // 1.3 megapixel   
 #define ov2640_FULL_RESOLUTION     0x200000           // 2 megapixel
 #define ov2655_FULL_RESOLUTION     0x200000           // 2 megapixel
+#define ov2655_back_FULL_RESOLUTION     0x200000           // 2 megapixel
 #define ov2659_FULL_RESOLUTION     0x200000           // 2 megapixel
 #define ov7690_FULL_RESOLUTION     0x300000           // 2 megapixel
 #define ov3640_FULL_RESOLUTION     0x300000           // 3 megapixel
@@ -102,6 +113,7 @@
 #define mt9p111_FULL_RESOLUTION    0x500000           // 5 megapixel
 #define gt2005_FULL_RESOLUTION     0x200000           // 2 megapixel
 #define gt2005_back_FULL_RESOLUTION     0x200000           // 2 megapixel
+#define gc0307_FULL_RESOLUTION     0x30000            // 0.3 megapixel
 #define gc0308_FULL_RESOLUTION     0x30000            // 0.3 megapixel
 #define gc0309_FULL_RESOLUTION     0x30000            // 0.3 megapixel
 #define gc2015_FULL_RESOLUTION     0x200000           // 2 megapixel
@@ -110,6 +122,9 @@
 #define hi253_FULL_RESOLUTION       0x200000           // 2 megapixel
 #define hi704_FULL_RESOLUTION       0x30000            // 0.3 megapixel
 #define nt99250_FULL_RESOLUTION     0x200000           // 2 megapixel
+#define nt99250_back_FULL_RESOLUTION     0x200000           // 2 megapixel
+#define fcam_FULL_RESOLUTION     0x500000           // 5 megapixel
+#define bcam_FULL_RESOLUTION     0x500000           // 5 megapixel
 /*---------------- Camera Sensor Must Define Macro End  ------------------------*/
 
 
@@ -177,7 +192,6 @@ struct rk29camera_mem_res {
 	unsigned int start;
 	unsigned int size;
 };
-
 struct rk29camera_info {
     const char *dev_name;
     unsigned int orientation;
@@ -187,9 +201,9 @@ struct rk29camera_platform_data {
     int (*io_init)(void);
     int (*io_deinit)(int sensor);
 	int (*sensor_ioctrl)(struct device *dev,enum rk29camera_ioctrl_cmd cmd,int on);
-    struct rk29camera_gpio_res gpio_res[2];
+    struct rk29camera_gpio_res gpio_res[RK29_CAM_SUPPORT_NUMS];
 	struct rk29camera_mem_res meminfo;
-     struct rk29camera_info info[2];
+    struct rk29camera_info info[RK29_CAM_SUPPORT_NUMS];
 };
 
 struct rk29camera_platform_ioctl_cb {
@@ -203,6 +217,25 @@ typedef struct rk29_camera_sensor_cb {
     int (*sensor_cb)(void *arg); 
 }rk29_camera_sensor_cb_s;
 
+struct cam_sensor_info 
+{    
+	const char  * pname;    
+	u8      reg_len;    
+	u8      val_len;    
+	u8      slave_addr;    
+	u8      active_level;    
+	u16    first_id_reg;    
+	u8      first_id;    
+	u16    second_id_reg;    
+	u8      second_id;    
+	struct soc_camera_ops                   * p_sensor_ops;    
+	struct v4l2_subdev_ops                  * p_sensor_subdev_ops;    
+	int (*sensor_deactivate)(struct i2c_client *client);    
+	int (*sensor_read)(struct i2c_client *client, u16 reg, u8 *val);    
+	int (*sensor_write)(struct i2c_client *client, u16 reg, u8 val);    
+	void (*change_cam_orientation)(struct i2c_client *client, int mode);    
+	int (*sensor_video_probe)(struct soc_camera_device *icd, struct i2c_client *client);
+}; 
 
 #endif /* __ASM_ARCH_CAMERA_H_ */
 

@@ -9,12 +9,14 @@
 #define PRESS_LEV_HIGH			0
 
 static struct rk29_keys_button key_button[] = {
+/*
 	{
 		.desc	= "menu",
 		.code	= EV_MENU,
 		.gpio	= RK29_PIN6_PA5,
 		.active_low = PRESS_LEV_LOW,
 	},
+*/
 	{
 		.desc	= "vol+",
 		.code	= KEY_VOLUMEUP,
@@ -68,52 +70,6 @@ static struct rk29_keys_button key_button[] = {
 		//.code_long_press = EV_ENCALL,
 		.wakeup	= 1,
 	},
-#if 0
-	{
-		.desc	= "vol+",
-		.code	= KEY_VOLUMEDOWN,
-		.adc_value	= 95,
-		.gpio = INVALID_GPIO,
-		.active_low = PRESS_LEV_LOW,
-	},
-	{
-		.desc	= "vol-",
-		.code	= KEY_VOLUMEUP,
-		.adc_value	= 249,
-		.gpio = INVALID_GPIO,
-		.active_low = PRESS_LEV_LOW,
-	},
-	{
-		.desc	= "menu",
-		.code	= EV_MENU,
-		.adc_value	= 406,
-		.gpio = INVALID_GPIO,
-		.active_low = PRESS_LEV_LOW,
-	},
-	{
-		.desc	= "home",
-		.code	= KEY_HOME,
-		.code_long_press = KEY_F4,
-		.adc_value	= 561,
-		.gpio = INVALID_GPIO,
-		.active_low = PRESS_LEV_LOW,
-	},
-	{
-		.desc	= "esc",
-		.code	= KEY_ESC,
-		.adc_value	= 726,
-		.gpio = INVALID_GPIO,
-		.active_low = PRESS_LEV_LOW,
-	},
-	{
-		.desc	= "adkey6",
-		.code	= KEY_BACK,
-		.code_long_press = EV_ENCALL,
-		.adc_value	= 899,
-		.gpio = INVALID_GPIO,
-		.active_low = PRESS_LEV_LOW,
-	},
-#endif
 };
 struct rk29_keys_platform_data rk29_keys_pdata = {
 	.buttons	= key_button,

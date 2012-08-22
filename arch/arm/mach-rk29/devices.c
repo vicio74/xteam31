@@ -702,12 +702,12 @@ static char *usb_functions_all[] = {
 
 static struct android_usb_product usb_products[] = {
 	{
-		.product_id	= 0x2910,//0x0c02,//0x4e11,
+		.product_id	= USB_PRODUCT_ID,//0x2910,//0x0c02,//0x4e11,
 		.num_functions	= ARRAY_SIZE(usb_functions_rockchip),
 		.functions	= usb_functions_rockchip,
 	},
 	{
-		.product_id	= 0x0c02,//0x0c02,//0x4e12,
+		.product_id	= ADB_PRODUCT_ID,//0x0c02,//0x0c02,//0x4e12,
 		.num_functions	= ARRAY_SIZE(usb_functions_rockchip_adb),
 		.functions	= usb_functions_rockchip_adb,
 	},
@@ -734,11 +734,11 @@ static struct android_usb_product usb_products[] = {
  * please change vendor_id to 0x0bb4 and product_id to 0x0c02.
  */
 static struct android_usb_platform_data android_usb_pdata = {
-	.vendor_id	= 0x0bb4,//0x2207,//0x0bb4,//0x18d1,
-	.product_id	= 0x143A,//0x4e11,//0x2910,//0x4e11,
+	.vendor_id	= VENDOR_ID,//0x0bb4,//0x2207,//0x0bb4,//0x18d1,
+	.product_id	= 0x4e11,//0x2910,//0x4e11,
 	.version	= 0x0100,
-	.product_name		= "rk2918",
-	.manufacturer_name	= "RockChip",
+	.product_name		= ADB_PRODUCT_NAME, //"rk2918",
+	.manufacturer_name	= ADB_MANUFACTURE_NAME,//"RockChip",
 	.num_products = ARRAY_SIZE(usb_products),
 	.products = usb_products,
 	.num_functions = ARRAY_SIZE(usb_functions_all),
@@ -757,8 +757,8 @@ struct platform_device android_usb_device = {
 /********************usb*********************/
 struct usb_mass_storage_platform_data mass_storage_pdata = {
 	.nluns		= 2,
-	.vendor		= "M-MP810C",//"RockChip",
-	.product	= "",//"rk29 sdk",
+	.vendor		= MASS_STORAGE_NAME, //"RockChip",
+	.product	= MASS_STORAGE_PRODUCT, //"rk29 sdk",
 	.release	= 0x0100,
 };
 

@@ -1,0 +1,33 @@
+MEM:			overclock a 480, il mio tab regge, sarebbe il massimo poter agire dinamicamente sulla freq
+
+CPUFREQ:		?
+
+SCREEN:			ok, da rivedere la routine di inzializzazione (schermo bianco all'avvio)
+
+VIDEO:			sembra ok, ha lo stesso bug del kernel Mediacom, ma penso dipenda dalla lib hal
+
+TOUCHSCREEN:	FT5301, sembra ok con ft5301.c (no fw update, no ft5x0x)
+
+SOUND:			ok 5631, maxvol boost, non funziona il volume
+
+WIFI:			ko power, da rivedere
+
+GSENSOR:		ok, rotazione come kernel originale
+
+PWM:			TPS65910 (vecchio driver 2.6) pwn riconosciuto, da controllare se effettivamente attivo
+
+RTC:			TPS65910 (vecchio driver 2.6), lettura time ok, 
+				irq da verificare:
+					//	.update_irq_enable = tps65910_rtc_update_irq_enable,
+					//	.irq_set_freq	= tps65910_rtc_irq_set_freq,
+				da controllare alarm wakeup
+
+BATTERIA:		ko
+
+USB_OTG:		configurati 2 lun, uno non funziona
+
+CAMERA:			ko
+
+BT:				?
+
+HDMI:			?

@@ -16,6 +16,7 @@
 #define __ARCH_ARM_MACH_RK29_GPIO_H
 
 #include <mach/irqs.h>
+#include "board_mp850i.h"
  
 typedef enum eGPIOPinLevel
 {

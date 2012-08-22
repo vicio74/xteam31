@@ -147,8 +147,6 @@ from_old_alarm_set:
 		spin_unlock_irqrestore(&alarm_slock, flags);
 		break;
 	case ANDROID_ALARM_SET_RTC:
-		time_chg_flag = 1;
-		//printk("------>time changed\n");
 		if (copy_from_user(&new_rtc_time, (void __user *)arg,
 		    sizeof(new_rtc_time))) {
 			rv = -EFAULT;

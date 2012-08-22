@@ -1,10 +1,8 @@
-/* linux/i2c/tps65910.h
+/* linux/i2c/tps65010.h
  *
- *  TPS65910 Power Management Device Definitions.
+ * Functions to access TPS65010 power management device.
  *
- * Based on include/linux/i2c/twl.h
- *
- * Copyright (C) 2010 Mistral Solutions Pvt Ltd <www.mistralsolutions.com>
+ * Copyright (C) 2004 Dirk Behme <dirk.behme@de.bosch.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -27,249 +25,181 @@
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef __LINUX_I2C_TPS65910_H
-#define __LINUX_I2C_TPS65910_H
-
-#define TPS65910_NUM_SLAVES	1
-/* I2C Slave Address 7-bit */
-#define	TPS65910_I2C_ID0	0x2D /* general-purpose */
-#define	TPS65910_I2C_ID1	0x12 /* Smart Reflex */
-
-/* TPS65910 to host IRQ */
-//#define TPS65910_HOST_IRQ TPS65910_INT_PIN	
-
-/* TPS65910 MAX GPIOs */
-#define TPS65910_GPIO_MAX	1
+#ifndef __LINUX_I2C_TPS65010_H
+#define __LINUX_I2C_TPS65010_H
 
 /*
  * ----------------------------------------------------------------------------
  * Registers, all 8 bits
  * ----------------------------------------------------------------------------
  */
-#define	TPS65910_REG_SECONDS		0x00
-#define TPS65910_REG_MINUTES		0x01
-#define TPS65910_REG_HOURS		0x02
-#define TPS65910_REG_DAYS		0x03
-#define TPS65910_REG_MONTHS		0x04
-#define TPS65910_REG_YEARS		0x05
-#define TPS65910_REG_WEEKS		0x06
-#define TPS65910_REG_ALARM_SECONDS	0x08
-#define TPS65910_REG_ALARM_MINUTES	0x09
-#define TPS65910_REG_ALARM_HOURS	0x0A
-#define TPS65910_REG_ALARM_DAYS		0x0B
-#define TPS65910_REG_ALARM_MONTHS	0x0C
-#define TPS65910_REG_ALARM_YEARS	0x0D
 
-#define TPS65910_REG_RTC_CTRL		0x10
-#define TPS65910_REG_RTC_STATUS		0x11
-#define TPS65910_REG_RTC_INTERRUPTS	0x12
-#define TPS65910_REG_RTC_COMP_LSB	0x13
-#define TPS65910_REG_RTC_COMP_MSB	0x14
-#define TPS65910_REG_RTC_RES_PROG	0x15
-#define TPS65910_REG_RTC_RESET_STATUS	0x16
-#define TPS65910_REG_BCK1		0x17
-#define TPS65910_REG_BCK2		0x18
-#define TPS65910_REG_BCK3		0x19
-#define TPS65910_REG_BCK4		0x1A
-#define TPS65910_REG_BCK5		0x1B
-#define TPS65910_REG_PUADEN		0x1C
-#define TPS65910_REG_REF		0x1D
-#define TPS65910_REG_VRTC		0x1E
+#define	TPS_CHGSTATUS		0x01
+#	define	TPS_CHG_USB		(1 << 7)
+#	define	TPS_CHG_AC		(1 << 6)
+#	define	TPS_CHG_THERM		(1 << 5)
+#	define	TPS_CHG_TERM		(1 << 4)
+#	define	TPS_CHG_TAPER_TMO	(1 << 3)
+#	define	TPS_CHG_CHG_TMO		(1 << 2)
+#	define	TPS_CHG_PRECHG_TMO	(1 << 1)
+#	define	TPS_CHG_TEMP_ERR	(1 << 0)
+#define	TPS_REGSTATUS		0x02
+#	define	TPS_REG_ONOFF		(1 << 7)
+#	define	TPS_REG_COVER		(1 << 6)
+#	define	TPS_REG_UVLO		(1 << 5)
+#	define	TPS_REG_NO_CHG		(1 << 4)	/* tps65013 */
+#	define	TPS_REG_PG_LD02		(1 << 3)
+#	define	TPS_REG_PG_LD01		(1 << 2)
+#	define	TPS_REG_PG_MAIN		(1 << 1)
+#	define	TPS_REG_PG_CORE		(1 << 0)
+#define	TPS_MASK1		0x03
+#define	TPS_MASK2		0x04
+#define	TPS_ACKINT1		0x05
+#define	TPS_ACKINT2		0x06
+#define	TPS_CHGCONFIG		0x07
+#	define	TPS_CHARGE_POR		(1 << 7)	/* 65010/65012 */
+#	define	TPS65013_AUA		(1 << 7)	/* 65011/65013 */
+#	define	TPS_CHARGE_RESET	(1 << 6)
+#	define	TPS_CHARGE_FAST		(1 << 5)
+#	define	TPS_CHARGE_CURRENT	(3 << 3)
+#	define	TPS_VBUS_500MA		(1 << 2)
+#	define	TPS_VBUS_CHARGING	(1 << 1)
+#	define	TPS_CHARGE_ENABLE	(1 << 0)
+#define	TPS_LED1_ON		0x08
+#define	TPS_LED1_PER		0x09
+#define	TPS_LED2_ON		0x0a
+#define	TPS_LED2_PER		0x0b
+#define	TPS_VDCDC1		0x0c
+#	define	TPS_ENABLE_LP		(1 << 3)
+#define	TPS_VDCDC2		0x0d
+#	define	TPS_LP_COREOFF	(1 << 7)
+#	define 	TPS_VCORE_1_8V	(7<<4)
+#	define 	TPS_VCORE_1_5V	(6 << 4)
+#	define 	TPS_VCORE_1_4V	(5 << 4)
+#	define 	TPS_VCORE_1_3V	(4 << 4)
+#	define 	TPS_VCORE_1_2V	(3 << 4)
+#	define 	TPS_VCORE_1_1V	(2 << 4)
+#	define 	TPS_VCORE_1_0V	(1 << 4)
+#	define 	TPS_VCORE_0_85V	(0 << 4)
+#	define	TPS_VCORE_LP_1_2V (3 << 2)
+#	define	TPS_VCORE_LP_1_1V (2 << 2)
+#	define	TPS_VCORE_LP_1_0V (1 << 2)
+#	define	TPS_VCORE_LP_0_85V (0 << 2)
+#	define	TPS_VIB		(1 << 1)
+#	define	TPS_VCORE_DISCH	(1 << 0)
+#define	TPS_VREGS1		0x0e
+#	define	TPS_LDO2_ENABLE	(1 << 7)
+#	define	TPS_LDO2_OFF	(1 << 6)
+#	define	TPS_VLDO2_3_0V	(3 << 4)
+#	define	TPS_VLDO2_2_75V	(2 << 4)
+#	define	TPS_VLDO2_2_5V	(1 << 4)
+#	define	TPS_VLDO2_1_8V	(0 << 4)
+#	define	TPS_LDO1_ENABLE	(1 << 3)
+#	define	TPS_LDO1_OFF	(1 << 2)
+#	define	TPS_VLDO1_3_0V	(3 << 0)
+#	define	TPS_VLDO1_2_75V	(2 << 0)
+#	define	TPS_VLDO1_2_5V	(1 << 0)
+#	define	TPS_VLDO1_ADJ	(0 << 0)
+#define	TPS_MASK3		0x0f
+#define	TPS_DEFGPIO		0x10
 
-#define TPS65910_REG_VIO		0x20
-#define TPS65910_REG_VDD1		0x21
-#define TPS65910_REG_VDD1_OP		0x22
-#define TPS65910_REG_VDD1_SR		0x23
-#define TPS65910_REG_VDD2		0x24
-#define TPS65910_REG_VDD2_OP		0x25
-#define TPS65910_REG_VDD2_SR		0x26
-#define TPS65910_REG_VDD3		0x27
+/*
+ * ----------------------------------------------------------------------------
+ * Macros used by exported functions
+ * ----------------------------------------------------------------------------
+ */
 
-#define TPS65910_REG_VDIG1		0x30
-#define TPS65910_REG_VDIG2		0x31
-#define TPS65910_REG_VAUX1		0x32
-#define TPS65910_REG_VAUX2		0x33
-#define TPS65910_REG_VAUX33		0x34
-#define TPS65910_REG_VMMC		0x35
-#define TPS65910_REG_VPLL		0x36
-#define TPS65910_REG_VDAC		0x37
-#define TPS65910_REG_THERM		0x38
-#define TPS65910_REG_BBCH		0x39
+#define LED1  1
+#define LED2  2
+#define OFF   0
+#define ON    1
+#define BLINK 2
+#define GPIO1 1
+#define GPIO2 2
+#define GPIO3 3
+#define GPIO4 4
+#define LOW   0
+#define HIGH  1
 
-#define TPS65910_REG_DCDCCTRL		0x3E
-#define TPS65910_REG_DEVCTRL		0x3F
-#define TPS65910_REG_DEVCTRL2		0x40
-#define TPS65910_REG_SLEEP_KEEP_LDO_ON	0x41
-#define TPS65910_REG_SLEEP_KEEP_RES_ON	0x42
-#define TPS65910_REG_SLEEP_SET_LDO_OFF	0x43
-#define TPS65910_REG_SLEEP_SET_RES_OFF	0x44
-#define TPS65910_REG_EN1_LDO_ASS	0x45
-#define TPS65910_REG_EN1_SMPS_ASS	0x46
-#define TPS65910_REG_EN2_LDO_ASS	0x47
-#define TPS65910_REG_EN2_SMPS_ASS	0x48
-#define TPS65910_REG_EN3_LDO_ASS	0x49
-#define TPS65910_REG_SPARE		0x4A
+/*
+ * ----------------------------------------------------------------------------
+ * Exported functions
+ * ----------------------------------------------------------------------------
+ */
 
-#define TPS65910_REG_INT_STS		0x50
-#define TPS65910_REG_INT_MSK		0x51
-#define TPS65910_REG_INT_STS2		0x52
-#define TPS65910_REG_INT_MSK2		0x53
-#define TPS65910_REG_INT_STS3		0x54
-#define TPS65910_REG_INT_MSK3		0x55
+/* Draw from VBUS:
+ *   0 mA -- DON'T DRAW (might supply power instead)
+ * 100 mA -- usb unit load (slowest charge rate)
+ * 500 mA -- usb high power (fast battery charge)
+ */
+extern int tps65010_set_vbus_draw(unsigned mA);
 
-#define TPS65910_REG_GPIO0		0x60
+/* tps65010_set_gpio_out_value parameter:
+ * gpio:  GPIO1, GPIO2, GPIO3 or GPIO4
+ * value: LOW or HIGH
+ */
+extern int tps65010_set_gpio_out_value(unsigned gpio, unsigned value);
 
-#define TPS65910_REG_JTAGVERNUM		0x80
+/* tps65010_set_led parameter:
+ * led:  LED1 or LED2
+ * mode: ON, OFF or BLINK
+ */
+extern int tps65010_set_led(unsigned led, unsigned mode);
 
-/* TPS65910 GPIO Specific flags */
-#define TPS65910_GPIO_INT_FALLING	0
-#define TPS65910_GPIO_INT_RISING	1
+/* tps65010_set_vib parameter:
+ * value: ON or OFF
+ */
+extern int tps65010_set_vib(unsigned value);
 
-#define TPS65910_DEBOUNCE_91_5_MS	0
-#define TPS65910_DEBOUNCE_150_MS	1
+/* tps65010_set_low_pwr parameter:
+ * mode: ON or OFF
+ */
+extern int tps65010_set_low_pwr(unsigned mode);
 
-#define TPS65910_GPIO_PUDIS		(1 << 3)
-#define TPS65910_GPIO_CFG_OUTPUT	(1 << 2)
+/* tps65010_config_vregs1 parameter:
+ * value to be written to VREGS1 register
+ * Note: The complete register is written, set all bits you need
+ */
+extern int tps65010_config_vregs1(unsigned value);
 
+/* tps65013_set_low_pwr parameter:
+ * mode: ON or OFF
+ */
+extern int tps65013_set_low_pwr(unsigned mode);
 
+/* tps65010_set_vdcdc2
+ *  value to be written to VDCDC2
+ */
+extern int tps65010_config_vdcdc2(unsigned value);
 
-/* TPS65910 Interrupt events */
+struct i2c_client;
 
-/* RTC Driver */
-#define TPS65910_RTC_ALARM_IT		0x80
-#define TPS65910_RTC_PERIOD_IT		0x40
+/**
+ * struct tps65010_board - packages GPIO and LED lines
+ * @base: the GPIO number to assign to GPIO-1
+ * @outmask: bit (N-1) is set to allow GPIO-N to be used as an
+ *	(open drain) output
+ * @setup: optional callback issued once the GPIOs are valid
+ * @teardown: optional callback issued before the GPIOs are invalidated
+ * @context: optional parameter passed to setup() and teardown()
+ *
+ * Board data may be used to package the GPIO (and LED) lines for use
+ * in by the generic GPIO and LED frameworks.  The first four GPIOs
+ * starting at gpio_base are GPIO1..GPIO4.  The next two are LED1/nPG
+ * and LED2 (with hardware blinking capability, not currently exposed).
+ *
+ * The @setup callback may be used with the kind of board-specific glue
+ * which hands the (now-valid) GPIOs to other drivers, or which puts
+ * devices in their initial states using these GPIOs.
+ */
+struct tps65010_board {
+	int				base;
+	unsigned			outmask;
 
-/*Core Driver */
-#define TPS65910_HOT_DIE_IT		0x20
-#define TPS65910_PWRHOLD_IT		0x10
-#define TPS65910_PWRON_LP_IT		0x08
-#define TPS65910_PWRON_IT		0x04
-#define TPS65910_VMBHI_IT		0x02
-#define TPS65910_VMBGCH_IT		0x01
-
-/* GPIO driver */
-#define TPS65910_GPIO_F_IT		0x02
-#define TPS65910_GPIO_R_IT		0x01
-
-
-#define TPS65910_VRTC_OFFMASK		(1<<3)
-
-/* Back-up battery charger control */
-#define TPS65910_BBCHEN			0x01
-
-/* Back-up battery charger voltage */
-#define TPS65910_BBSEL_3P0		0x00
-#define TPS65910_BBSEL_2P52		0x02
-#define TPS65910_BBSEL_3P15		0x04
-#define TPS65910_BBSEL_VBAT		0x06
-
-/* DEVCTRL_REG flags */
-#define TPS65910_RTC_PWDNN		0x40
-#define TPS65910_CK32K_CTRL		0x20
-#define TPS65910_SR_CTL_I2C_SEL 	0x10
-#define TPS65910_DEV_OFF_RST		0x08
-#define TPS65910_DEV_ON			0x04
-#define TPS65910_DEV_SLP		0x02
-#define TPS65910_DEV_OFF		0x01
-
-/* DEVCTRL2_REG flags */
-#define TPS65910_DEV2_TSLOT_LENGTH	0x30
-#define TPS65910_DEV2_SLEEPSIG_POL	0x08
-#define TPS65910_DEV2_PWON_LP_OFF	0x04
-#define TPS65910_DEV2_PWON_LP_RST	0x02
-#define TPS65910_DEV2_IT_POL		0x01
-
-/* TPS65910 SMPS/LDO's */
-#define TPS65910_VIO			0
-#define TPS65910_VDD1			1
-#define TPS65910_VDD2			2
-#define TPS65910_VDD3			3
-/* LDOs */
-#define TPS65910_VDIG1			4
-#define TPS65910_VDIG2			5
-#define TPS65910_VAUX33			6
-#define TPS65910_VMMC			7
-#define TPS65910_VAUX1			8
-#define TPS65910_VAUX2			9
-#define TPS65910_VDAC			10
-#define TPS65910_VPLL			11
-/* Internal LDO */
-#define TPS65910_VRTC			12
-
-/* Number of step-down/up converters available */
-#define TPS65910_NUM_DCDC		4
-
-/* Number of LDO voltage regulators  available */
-#define TPS65910_NUM_LDO		9
-
-/* Number of total regulators available */
-#define TPS65910_NUM_REGULATOR  (TPS65910_NUM_DCDC + TPS65910_NUM_LDO)
-
-
-/* Regulator Supply state */
-#define SUPPLY_STATE_FLAG		0x03
-/* OFF States */
-#define TPS65910_REG_OFF_00		0x00
-#define TPS65910_REG_OFF_10		0x02
-/* OHP - on High Power */
-#define TPS65910_REG_OHP		0x01
-/* OLP - on Low Power */
-#define TPS65910_REG_OLP		0x03
-
-#define TPS65910_MAX_IRQS		10
-#define TPS65910_VMBDCH_IRQ     	0
-#define TPS65910_VMBHI_IRQ      	1
-#define TPS65910_PWRON_IRQ      	2
-#define TPS65910_PWRON_LP_IRQ   	3
-#define TPS65910_PWRHOLD_IRQ    	4
-#define TPS65910_HOTDIE_IRQ     	5
-#define TPS65910_RTC_ALARM_IRQ  	6
-#define TPS65910_RTC_PERIOD_IRQ 	7
-#define TPS65910_GPIO0_R_IRQ    	8
-#define TPS65910_GPIO0_F_IRQ    	9
-
-/* TPS65910 has 1 GPIO  */
-struct tps65910_gpio {
-	u8      debounce;
-	u8      pullup_pulldown;
-	u8 	gpio_config;  /* Input or output */
-	u8 	gpio_val;    /* Output value */
-	int (*gpio_setup)(struct tps65910_gpio *pdata);
-	int (*gpio_taredown)(struct tps65910_gpio *pdata);
+	int		(*setup)(struct i2c_client *client, void *context);
+	int		(*teardown)(struct i2c_client *client, void *context);
+	void		*context;
 };
 
-struct tps65910_platform_data {
-
-	unsigned irq_num;  /* TPS65910 to Host IRQ Number */
-	struct tps65910_gpio	*gpio;
-
-	/* plaform specific data to be initialised in board file */
-	struct regulator_init_data *vio;
-	struct regulator_init_data *vdd1;
-	struct regulator_init_data *vdd2;
-	struct regulator_init_data *vdd3;
-	struct regulator_init_data *vdig1;
-	struct regulator_init_data *vdig2;
-	struct regulator_init_data *vaux33;
-	struct regulator_init_data *vmmc;
-	struct regulator_init_data *vaux1;
-	struct regulator_init_data *vaux2;
-	struct regulator_init_data *vdac;
-	struct regulator_init_data *vpll;
-
-	void  (*handlers[TPS65910_MAX_IRQS]) (void  *data);
-	/* Configure TP65910 to board specific usage*/
-	int (*board_tps65910_config)(struct tps65910_platform_data *pdata);
-};
-
-int tps65910_enable_bbch(u8 voltage);
-int tps65910_disable_bbch(void);
-
-int tps65910_remove_irq_work(int irq);
-int tps65910_add_irq_work(int irq, void (*handler)(void *data));
-
-int tps65910_i2c_write_u8(u8 slave_addr, u8 val, u8 reg);
-int tps65910_i2c_read_u8(u8 slave_addr, u8 *val, u8 reg);
-
-#endif /*  __LINUX_I2C_TPS65910_H */
+#endif /*  __LINUX_I2C_TPS65010_H */
 

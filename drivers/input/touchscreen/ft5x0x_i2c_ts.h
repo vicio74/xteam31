@@ -15,11 +15,21 @@
 #define CFG_NUMOFKEYS                    0x4    //number of touch keys
 
 #ifdef CONFIG_FTS_CUSTOME_ENV  
-//当手指从边界划起时,会出现无响应的情况,因此添加一个宏将边界最大值向外拉伸
-#define SCREEN_BOUNDARY_ADJUST_VALUE 10 
 
-#define SCREEN_MAX_X           1024
-#define SCREEN_MAX_Y           600
+#if defined (CONFIG_TOUCHSCREEN_1024X768)
+#define SCREEN_MAX_X 1024
+#define SCREEN_MAX_Y 768
+#elif defined (CONFIG_TOUCHSCREEN_1024X600)
+#define SCREEN_MAX_X 1024
+#define SCREEN_MAX_Y 600
+#elif defined (CONFIG_TOUCHSCREEN_800X600)
+#define SCREEN_MAX_X 800
+#define SCREEN_MAX_Y 600
+#elif defined (CONFIG_TOUCHSCREEN_800X480)
+#define SCREEN_MAX_X 800
+#define SCREEN_MAX_Y 480
+#endif
+
 #else
 #define SCREEN_MAX_X           800
 #define SCREEN_MAX_Y           480
@@ -84,9 +94,6 @@ typedef enum
     short    pressure5;
     u8        touch_point;
 };
-
-
-
 
 enum ft5x0x_ts_regs {
     FT5X0X_REG_THRES = 0x80,              /* Thresshold, the threshold be low, the sensitivy will be high */

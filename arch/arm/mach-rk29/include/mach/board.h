@@ -23,37 +23,6 @@
 #include <linux/notifier.h>
 #include <mach/board_mp850i.h>
 
-struct adc_battery_platform_data {
-        int adc_chn;
-
-        int (*io_init)(void);
-        int (*io_deinit)(void);
-
-        int dc_det_gpio;
-        int batt_low_gpio;
-        int chg_ok_gpio;
-        int charge_set_gpio;
-
-        int dc_det_level;
-    int batt_low_level;
-    int chg_ok_level;
-    int charge_set_level;
-};
-
-struct rk2918_battery_platform_data 
-{	
-	int (*io_init)(void);	
-	int (*io_deinit)(void);    	
-	int dc_det_pin;    	
-	int charge_ok_pin;	
-	int charge_set_pin;	
-	int dc_det_level;	
-	int charge_ok_level;	
-	int charge_set_level;
-	int charge_cur_ctl;  /* charge current select, only for usb charger */
-	int charge_cur_ctl_level;  /* huge current level */
-};
-
 struct led_newton_pwm {
 	const char	*name;
 	unsigned int	pwm_id;
@@ -88,6 +57,11 @@ struct rk29_button_light_info{
 	u32 led_on_level;
 	int (*io_init)(void);
 	int (*io_deinit)(void);
+};
+
+struct ts_hw_data {
+	int reset_gpio;
+	int touch_en_gpio;
 };
 
 /*spi*/
@@ -192,21 +166,6 @@ struct rk29_i2c_platform_data {
 	int (*io_deinit)(void);
 };
 
-/*battery*/
-struct rk29_adc_battery_platform_data {
-	int (*io_init)(void);
-	int (*io_deinit)(void);
-
-    int dc_det_pin;
-    int batt_low_pin;
-	int charge_ok_pin;
-    int charge_set_pin;
-    
-	int dc_det_level;
-    int batt_low_level;
-    int charge_ok_level;
-    int charge_set_level;
-};
 struct bq27510_platform_data {	
 	int (*init_dc_check_pin)(void);	
 	unsigned int dc_check_pin;	
@@ -314,6 +273,20 @@ struct cm3202_platform_data {
 	void    (*exit_platform_hw)(void);
 };
 
+struct rk2918_battery_platform_data 
+{	
+	int (*io_init)(void);	
+	int (*io_deinit)(void);    	
+	int dc_det_pin;    	
+	int charge_ok_pin;	
+	int charge_set_pin;	
+	int dc_det_level;	
+	int charge_ok_level;	
+	int charge_set_level;
+	int charge_cur_ctl;  /* charge current select, only for usb charger */
+	int charge_cur_ctl_level;  /* huge current level */
+};
+
 /*it7260 touch */
 struct it7260_platform_data {
     int     (*get_pendown_state)(void);
@@ -330,12 +303,6 @@ struct ft5406_platform_data {
     int     (*platform_wakeup)(void);
     void    (*exit_platform_hw)(void);
 };
-/* inserite da Yatto per ft5301 */
-struct ts_hw_data {
-	int reset_gpio;
-	int touch_en_gpio;
-};
-/* Fine INnserimento yatto */
 
 struct goodix_platform_data {
 	int model ;
@@ -425,7 +392,7 @@ struct tca6424_platform_data {
 
 void __init rk29_setup_early_printk(void);
 void __init rk29_map_common_io(void);
-void __init board_power_init(void);
+int  __init board_power_init(void);
 
 #define BOOT_MODE_NORMAL		0
 #define BOOT_MODE_FACTORY2		1

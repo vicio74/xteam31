@@ -67,16 +67,16 @@ static struct early_suspend ft5406_power;
 
 #define CONFIG_FT5X0X_MULTITOUCH  1
 #define MAX_POINT                 5
-#define FT5406_IIC_SPEED          200*1000    //300*1000
+#define FT5406_IIC_SPEED          400*1000    //300*1000
 #define TOUCH_RESET_PIN           RK29_PIN6_PC3
 #define FT5X0X_REG_THRES          0x80         /* Thresshold, the threshold be low, the sensitivy will be high */
 #define FT5X0X_REG_REPORT_RATE    0x88         /* **************report rate, in unit of 10Hz **************/
 #define FT5X0X_REG_PMODE          0xA5         /* Power Consume Mode 0 -- active, 1 -- monitor, 3 -- sleep */    
 #define FT5X0X_REG_FIRMID         0xA6         /* ***************firmware version **********************/
 #define FT5X0X_REG_NOISE_MODE     0xb2         /* to enable or disable power noise, 1 -- enable, 0 -- disable */
-#define SCREEN_MAX_X              800
-#define SCREEN_MAX_Y              600
-#define PRESS_MAX                 200
+#define SCREEN_MAX_X              1024
+#define SCREEN_MAX_Y              768
+#define PRESS_MAX                 255
 #define FT5X0X_NAME	              "ft5x0x_ts"//"synaptics_i2c_rmi"//"synaptics-rmi-ts"// 
 #define TOUCH_MAJOR_MAX           200
 #define WIDTH_MAJOR_MAX           200
@@ -676,11 +676,13 @@ static int ft5406_resume(struct i2c_client *client)
 
 static void ft5406_suspend_early(struct early_suspend *h)
 {
+	dev_info(&this_client->dev, "ft5406_suspend_early!\n");
 	ft5406_suspend(this_client,PMSG_SUSPEND);
 }
 
 static void ft5406_resume_early(struct early_suspend *h)
 {
+	dev_info(&this_client->dev, "ft5406_resume_early!\n");
 	ft5406_resume(this_client);
 }
 static int __devexit ft5406_remove(struct i2c_client *client)
@@ -814,6 +816,7 @@ static int  ft5406_probe(struct i2c_client *client ,const struct i2c_device_id *
 	 fts_register_read(FT5X0X_REG_NOISE_MODE, &reg_value,1);
 	 printk("[TSP]nosie mode = 0x%2x\n", reg_value);
 
+#if 0
 	  if (fts_ctpm_get_upg_ver() != reg_version)  
 	  {
 		  printk("[TSP] start upgrade new verison 0x%2x\n", fts_ctpm_get_upg_ver());
@@ -832,6 +835,7 @@ static int  ft5406_probe(struct i2c_client *client ,const struct i2c_device_id *
 		  }
 		  msleep(4000);
 	  }
+#endif
 
 	//printk("client->dev.driver->name %s  ,%d \n",client->dev.driver->name,ft5x0x_ts->irq);
 	ret = request_irq(ft5x0x_ts->irq, ft5406_interrupt, IRQF_TRIGGER_FALLING, client->dev.driver->name, ft5x0x_ts);
@@ -909,4 +913,4 @@ module_exit(ft5406_ts_exit);
 
 MODULE_AUTHOR("<wenfs@Focaltech-systems.com>");
 MODULE_DESCRIPTION("FocalTech ft5x0x TouchScreen driver");
-
+MODULE_LICENSE("GPL");
